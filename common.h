@@ -15,9 +15,6 @@
 #define RENDER_METHOD_GENERIC 3
 
 
-struct libglitter_context {
-};
-
 struct libglitter_render_context {
 	const uint8_t *restrict cellmap;
 	const uint8_t *restrict ncellvalues;
