@@ -18,7 +18,11 @@ LIB_NAME = glitter
 
 OBJ =\
 	libglitter_compose_double.o\
-	libglitter_compose_float.o
+	libglitter_compose_float.o\
+	libglitter_compose_uint16.o\
+	libglitter_compose_uint32.o\
+	libglitter_compose_uint64.o\
+	libglitter_compose_uint8.o
 
 HDR =\
 	libglitter.h
@@ -30,6 +34,10 @@ all: libglitter.a libglitter.$(LIBEXT)
 $(OBJ): $(HDR)
 $(LOBJ): $(HDR)
 libglitter_compose_float.o: libglitter_compose_double.c
+libglitter_compose_uint16.o: libglitter_compose_uint64.c libglitter_compose_double.c
+libglitter_compose_uint32.o: libglitter_compose_uint64.c libglitter_compose_double.c
+libglitter_compose_uint64.o: libglitter_compose_double.c
+libglitter_compose_uint8.o: libglitter_compose_uint64.c libglitter_compose_double.c
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)

@@ -3,39 +3,6 @@
 
 
 static void
-generic(double **outputs, size_t noutputs, const double *restrict input,
-        size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
-        size_t width, size_t height, size_t widthmul, size_t heightmul,
-        const uint8_t *restrict cellmap, const double *restrict ncellweights)
-{
-	size_t y, x, iy, ix, output_y, output_i, input_blanking;
-	uint8_t channel;
-	double value;
-
-	output_rowsize *= output_cellsize;
-	input_blanking = input_rowsize * heightmul - width * widthmul;
-
-	for (y = 0, output_y = 0; y < height; y++, output_y += output_rowsize) {
-		for (x = 0, output_i = output_y; x < width; x++, output_i += output_cellsize) {
-
-			for (iy = 0; iy < heightmul; iy++) {
-				for (ix = 0; ix < widthmul; ix++) {
-					channel = cellmap[iy * widthmul + ix];
-
-					value = input[iy * input_rowsize + ix];
-					value *= ncellweights[channel];
-
-					outputs[channel][output_i] += value;
-				}
-			}
-			input = &input[widthmul];
-		}
-		input = &input[input_blanking];
-	}
-}
-
-
-static void
 vstrips(double **outputs_, const double *restrict input, size_t output_rowsize, size_t output_cellsize,
         size_t input_rowsize, size_t width, size_t height, const uint8_t *restrict cellmap)
 {
@@ -89,6 +56,42 @@ hstrips(double **outputs_, const double *restrict input, size_t output_rowsize, 
 }
 
 
+#ifndef ONLY_INT_COMPATIBLE
+
+
+static void
+generic(double **outputs, const double *restrict input,
+        size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
+        size_t width, size_t height, size_t widthmul, size_t heightmul,
+        const uint8_t *restrict cellmap, const double *restrict ncellweights)
+{
+	size_t y, x, iy, ix, output_y, output_i, input_blanking;
+	uint8_t channel;
+	double value;
+
+	output_rowsize *= output_cellsize;
+	input_blanking = input_rowsize * heightmul - width * widthmul;
+
+	for (y = 0, output_y = 0; y < height; y++, output_y += output_rowsize) {
+		for (x = 0, output_i = output_y; x < width; x++, output_i += output_cellsize) {
+
+			for (iy = 0; iy < heightmul; iy++) {
+				for (ix = 0; ix < widthmul; ix++) {
+					channel = cellmap[iy * widthmul + ix];
+
+					value = input[iy * input_rowsize + ix];
+					value *= ncellweights[channel];
+
+					outputs[channel][output_i] += value;
+				}
+			}
+			input = &input[widthmul];
+		}
+		input = &input[input_blanking];
+	}
+}
+
+
 void
 libglitter_compose_double(double **outputs, size_t noutputs, const double *restrict input,
                           size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
@@ -100,7 +103,10 @@ libglitter_compose_double(double **outputs, size_t noutputs, const double *restr
 	} else if (noutputs == 3 && widthmul == 1 && heightmul == 3) {
 		hstrips(outputs, input, output_rowsize, output_cellsize, input_rowsize, width, height, cellmap);
 	} else {
-		generic(outputs, noutputs, input, output_rowsize, output_cellsize,
-		        input_rowsize, width, height, widthmul, heightmul, cellmap, ncellweights);
+		generic(outputs, input, output_rowsize, output_cellsize, input_rowsize,
+		        width, height, widthmul, heightmul, cellmap, ncellweights);
 	}
 }
+
+
+#endif
