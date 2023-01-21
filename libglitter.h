@@ -70,7 +70,7 @@ void libglitter_free_render_context(LIBGLITTER_RENDER_CONTEXT *);
  * model's transfer function: it does not directly give
  * you appropriate sRGB values
  * 
- * @param  outputs          Array of output rasters, on for each subpixel colour.
+ * @param  outputs          Array of output rasters, one for each subpixel colour.
  *                          The function may change the offset for each raster,
  *                          as such, the given pointer shall not be used anywhere
  *                          else during the execution of the function and the
@@ -105,7 +105,7 @@ void libglitter_compose_float(float **, const float *restrict, size_t, size_t,
  * model's transfer function: it does not directly give
  * you appropriate sRGB values
  * 
- * @param  outputs          Array of output rasters, on for each subpixel colour.
+ * @param  outputs          Array of output rasters, one for each subpixel colour.
  *                          The function may change the offset for each raster,
  *                          as such, the given pointer shall not be used anywhere
  *                          else during the execution of the function and the
@@ -147,6 +147,40 @@ void libglitter_compose_uint16(uint16_t **, const uint16_t *restrict, size_t, si
  */
 void libglitter_compose_uint8(uint8_t **, const uint8_t *restrict, size_t, size_t,
                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
+
+
+/**
+ * Transform rasters from fully using subpixel rendering to
+ * balance between subpixel rendering and greyscale antialiasing
+ * 
+ * @param  rasters     Array of rasters, one for each subpixel colour.
+ *                     The function may change the offset for each raster,
+ *                     as such, the given pointer shall not be used anywhere
+ *                     else during the execution of the function and the
+ *                     inner pointers shall be considered undefined after
+ *                     the execution of the function
+ * @param  nrasters    The number of rasters
+ * @param  rowsize     The number of cells in a row in each raster
+ * @param  cellsize    The number of values stored in each raster,
+ *                     between each cell, plus 1 (that is, the number of
+ *                     values per cell)
+ * @param  width       The horizontal number of pixels in the rasters
+ * @param  height      The vertical number of pixels in the rasters
+ * @param  saturation  The subpixel rendering saturation, 1 for regular
+ *                     subpixel rendering, 0 for greyscale, values
+ *                     inbetween for a compromise
+ * @param  primary_ys  The CIE Y value (in e.g. CIE xyY or CIE XYZ) for
+ *                     each subpixel colour; or `NULL` for the sRGB values
+ *                     (this is only allowed if there are exactly 3 rasters)
+ */
+void libglitter_desaturate_double(double **, size_t, size_t, size_t, size_t, size_t, double, const double *);
+
+/**
+ * This value is identical to `libglitter_desaturate_double`,
+ * apart from it parameter types, see `libglitter_desaturate_double`
+ * for details about this function
+ */
+void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_t, float, const float *);
 
 
 #endif

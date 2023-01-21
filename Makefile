@@ -23,6 +23,8 @@ OBJ =\
 	libglitter_compose_uint32.o\
 	libglitter_compose_uint64.o\
 	libglitter_compose_uint8.o\
+	libglitter_desaturate_double.o\
+	libglitter_desaturate_float.o\
 	libglitter_create_render_context.o\
 	libglitter_free_render_context.o\
 	libglitter_update_render_context.o
@@ -42,6 +44,7 @@ libglitter_compose_uint16.o: libglitter_compose_uint64.c libglitter_compose_doub
 libglitter_compose_uint32.o: libglitter_compose_uint64.c libglitter_compose_double.c
 libglitter_compose_uint64.o: libglitter_compose_double.c
 libglitter_compose_uint8.o: libglitter_compose_uint64.c libglitter_compose_double.c
+libglitter_desaturate_float.o: libglitter_desaturate_double.c
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)

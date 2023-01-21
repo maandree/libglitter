@@ -1,4 +1,5 @@
-Add colour space conversion and saturation
+Add colour space conversion
+Add function to output primary chromas from an EDID
 Add support for GPU-acceleration
 Add man pages
 Add tests
