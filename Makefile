@@ -22,9 +22,13 @@ OBJ =\
 	libglitter_compose_uint16.o\
 	libglitter_compose_uint32.o\
 	libglitter_compose_uint64.o\
-	libglitter_compose_uint8.o
+	libglitter_compose_uint8.o\
+	libglitter_create_render_context.o\
+	libglitter_free_render_context.o\
+	libglitter_update_render_context.o
 
 HDR =\
+	common.h\
 	libglitter.h
 
 LOBJ = $(OBJ:.o=.lo)

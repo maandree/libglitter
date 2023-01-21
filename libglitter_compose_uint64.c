@@ -1,9 +1,8 @@
 /* See LICENSE file for copyright and license details. */
-#include "libglitter.h"
+#include "common.h"
 #define ONLY_INT_COMPATIBLE
 #define double uint64_t
 #include "libglitter_compose_double.c"
-#include <alloca.h>
 #ifdef greater_t
 # define MIX(A, B) (((greater_t)(A) + (greater_t)(B)) >> 1)
 #else
@@ -13,40 +12,24 @@
 
 
 static void
-simple(uint64_t **outputs, const uint64_t *restrict input,
-       size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
-       size_t width, size_t height, size_t widthmul, size_t heightmul,
-       const uint8_t *restrict cellmap)
+simple(uint64_t **outputs, const uint64_t *restrict input, size_t output_rowsize, size_t output_cellsize,
+       size_t input_rowsize, size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *render_ctx)
 {
 	size_t y, x, output_y, output_i, input_blanking;
-	uint8_t channel;
-	size_t cells[3][2];
-	size_t cellsi[3] = {0, 0, 0};
+	size_t cell00 = render_ctx->cells[0][0], cell01 = render_ctx->cells[0][1];
+	size_t cell10 = render_ctx->cells[1][0], cell11 = render_ctx->cells[1][1];
+	size_t cell20 = render_ctx->cells[2][0], cell21 = render_ctx->cells[2][1];
 
 	output_rowsize *= output_cellsize;
-	input_blanking = input_rowsize * heightmul - width * widthmul;
-
-	for (y = 0; y < heightmul; y++) {
-		for (x = 0; x < widthmul; x++) {
-			channel = cellmap[y * widthmul + x];
-			cells[channel][cellsi[channel]] = y * input_rowsize + x;
-			cellsi[channel] += 1;
-		}
-	}
-	if (cellsi[0] == 1)
-		cells[0][1] = cells[0][0];
-	if (cellsi[1] == 1)
-		cells[1][1] = cells[1][0];
-	if (cellsi[2] == 1)
-		cells[2][1] = cells[2][0];
+	input_blanking = input_rowsize * render_ctx->heightmul - width * render_ctx->widthmul;
 
 	for (y = 0, output_y = 0; y < height; y++, output_y += output_rowsize) {
 		for (x = 0, output_i = output_y; x < width; x++, output_i += output_cellsize) {
 
-			outputs[0][output_i] = (uint64_t)MIX(input[cells[0][0]], input[cells[0][1]]);
-			outputs[1][output_i] = (uint64_t)MIX(input[cells[0][0]], input[cells[0][1]]);
-			outputs[2][output_i] = (uint64_t)MIX(input[cells[0][0]], input[cells[0][1]]);
-			input = &input[widthmul];
+			outputs[0][output_i] = (uint64_t)MIX(input[cell00], input[cell01]);
+			outputs[1][output_i] = (uint64_t)MIX(input[cell10], input[cell11]);
+			outputs[2][output_i] = (uint64_t)MIX(input[cell20], input[cell21]);
+			input = &input[render_ctx->widthmul];
 		}
 		input = &input[input_blanking];
 	}
@@ -82,7 +65,7 @@ generic(uint64_t **outputs, size_t noutputs, const uint64_t *restrict input,
 			}
 
 			for (i = 0; i < noutputs; i++)
-				outputs[i][output_i] = (uint64_t)(pixel[channel] / (greater_t)ncellvalues[i]);
+				outputs[i][output_i] = (uint64_t)(pixel[i] / (greater_t)ncellvalues[i]);
 
 			input = &input[widthmul];
 		}
@@ -92,20 +75,18 @@ generic(uint64_t **outputs, size_t noutputs, const uint64_t *restrict input,
 
 
 void
-libglitter_compose_uint64(uint64_t **outputs, size_t noutputs, const uint64_t *restrict input,
-                          size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
-                          size_t width, size_t height, size_t widthmul, size_t heightmul,
-                          const uint8_t *restrict cellmap, const uint8_t *restrict ncellvalues)
+libglitter_compose_uint64(uint64_t **outputs, const uint64_t *restrict input, size_t output_rowsize, size_t output_cellsize,
+                          size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *render_ctx)
 {
-	if (noutputs == 3 && widthmul == 3 && heightmul == 1) {
-		vstrips(outputs, input, output_rowsize, output_cellsize, input_rowsize, width, height, cellmap);
-	} else if (noutputs == 3 && widthmul == 1 && heightmul == 3) {
-		hstrips(outputs, input, output_rowsize, output_cellsize, input_rowsize, width, height, cellmap);
-	} else if (noutputs == 3 && ncellvalues[0] <= 2 && ncellvalues[1] <= 2 && ncellvalues[2] <= 2) {
-		simple(outputs, input, output_rowsize, output_cellsize, input_rowsize,
-		       width, height, widthmul, heightmul, cellmap);
+	if (render_ctx->render_method == RENDER_METHOD_VSTRIPS) {
+		vstrips(outputs, input, output_rowsize, output_cellsize, render_ctx->rowsize, width, height, render_ctx->cellmap);
+	} else if (render_ctx->render_method == RENDER_METHOD_HSTRIPS) {
+		hstrips(outputs, input, output_rowsize, output_cellsize, render_ctx->rowsize, width, height, render_ctx->cellmap);
+	} else if (render_ctx->render_method == RENDER_METHOD_SIMPLE) {
+		simple(outputs, input, output_rowsize, output_cellsize, render_ctx->rowsize, width, height, render_ctx);
 	} else {
-		generic(outputs, noutputs, input, output_rowsize, output_cellsize,
-		        input_rowsize, width, height, widthmul, heightmul, cellmap, ncellvalues);
+		generic(outputs, render_ctx->noutputs, input, output_rowsize, output_cellsize,
+		        render_ctx->rowsize, width, height, render_ctx->widthmul, render_ctx->heightmul,
+		        render_ctx->cellmap, render_ctx->ncellvalues);
 	}
 }

@@ -1,5 +1,5 @@
 /* See LICENSE file for copyright and license details. */
-#include "libglitter.h"
+#include "common.h"
 typedef uint_fast32_t greater_t;
 #define greater_t greater_t
 #define libglitter_compose_uint64 libglitter_compose_uint16

@@ -1,0 +1,4 @@
+Add colour space conversion and saturation
+Add support for GPU-acceleration
+Add man pages
+Add tests
