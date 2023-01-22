@@ -83,7 +83,7 @@ void libglitter_free_render_context(LIBGLITTER_RENDER_CONTEXT *);
  *                          as such, the given pointer shall not be used anywhere
  *                          else during the execution of the function and the
  *                          inner pointers shall be considered undefined after
- *                          the execution of the function
+ *                          the execution of the function.
  * @param  input            Input raster; cells are adjacent
  * @param  output_rowsize   The number of cells in a row in each output raster
  * @param  output_cellsize  The number of values stored in each output raster,
@@ -118,7 +118,7 @@ void libglitter_compose_float(float **, const float *restrict, size_t, size_t,
  *                          as such, the given pointer shall not be used anywhere
  *                          else during the execution of the function and the
  *                          inner pointers shall be considered undefined after
- *                          the execution of the function
+ *                          the execution of the function.
  * @param  input            Input raster; cells are adjacent
  * @param  output_rowsize   The number of cells in a row in each output raster
  * @param  output_cellsize  The number of values stored in each output raster,
@@ -235,7 +235,7 @@ void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_
  *                      as such, the given pointer shall not be used anywhere
  *                      else during the execution of the function and the
  *                      inner pointers shall be considered undefined after
- *                      the execution of the function
+ *                      the execution of the function.
  * @param  nrasters     The number of rasters
  * @param  rowsize      The number of cells in a row in each raster
  * @param  cellsize     The number of values stored in each raster,
@@ -300,6 +300,47 @@ void libglitter_get_colour_space_conversion_matrix_double(double[3][3], double, 
  */
 void libglitter_get_colour_space_conversion_matrix_float(float[3][3], float, float, float, float,
                                                          float, float, float, float, float, int);
+
+
+/**
+ * Convert set of rasters from one colour space to another
+ * 
+ * @param  n                The number of input rasters
+ * @param  m                The number of output rasters
+ * @param  outputs          Array of output rasters. The function may change
+ *                          the offset for each raster, as such, the given
+ *                          pointer shall not be used anywhere else during
+ *                          the execution of the function and the inner
+ *                          pointers shall be considered undefined after the
+ *                          execution of the function.
+ * @param  inputs           Array of input rasters. The function may change
+ *                          the offset for each raster, as such, the given
+ *                          pointer shall not be used anywhere else during
+ *                          the execution of the function and the inner
+ *                          pointers shall be considered undefined after the
+ *                          execution of the function.
+ * @param  output_rowsize   The number of cells in a row in each output raster
+ * @param  output_cellsize  The number of values stored in each output raster,
+ *                          between each cell, plus 1 (that is, the number of
+ *                          values per cell)
+ * @param  input_rowsize    The number of cells in a row in each input raster
+ * @param  input_cellsize   The number of values stored in each input raster,
+ *                          between each cell, plus 1 (that is, the number of
+ *                          values per cell)
+ * @param  width            The horizontal number of pixels in the rasters
+ * @param  height           The vertical number of pixels in the rasters
+ * @param  matrix           Colour space conversion matrix
+ */
+void libglitter_colour_space_convert_rasters_double(size_t n, size_t m, double **, const double **,
+                                                    size_t, size_t, size_t, size_t, size_t, size_t, const double[n][m]);
+
+/**
+ * This value is identical to `libglitter_colour_space_convert_rasters_double`,
+ * apart from it parameter types, see `libglitter_colour_space_convert_rasters_double`
+ * for details about this function
+ */
+void libglitter_colour_space_convert_rasters_float(size_t n, size_t m, float **, const float **,
+                                                   size_t, size_t, size_t, size_t, size_t, size_t, const float[n][m]);
 
 
 #endif

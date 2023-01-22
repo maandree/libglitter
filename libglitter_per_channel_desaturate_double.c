@@ -8,9 +8,9 @@
 
 
 void
-libglitter_per_channel_desaturate_double(double **rasters, size_t nrasters, size_t rowsize,
-                                         size_t cellsize, size_t width, size_t height,
-                                         const double *saturations, const double *primary_ys)
+libglitter_per_channel_desaturate_double(double **rasters, size_t nrasters, size_t rowsize, size_t cellsize,
+                                         size_t width, size_t height, const double *restrict saturations,
+                                         const double *restrict primary_ys)
 {
 	size_t y, x, ch, raster_y, raster_i;
 	double intensity;

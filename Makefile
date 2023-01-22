@@ -17,6 +17,8 @@ LIB_NAME = glitter
 
 
 OBJ =\
+	libglitter_colour_space_convert_rasters_double.o\
+	libglitter_colour_space_convert_rasters_float.o\
 	libglitter_compose_double.o\
 	libglitter_compose_float.o\
 	libglitter_compose_uint16.o\
