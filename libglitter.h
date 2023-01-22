@@ -79,6 +79,27 @@ typedef struct libglitter_render_context LIBGLITTER_RENDER_CONTEXT;
 
 
 /**
+ * Output primary colour
+ */
+enum libglitter_colour {
+	/**
+	 * Red primary colour
+	 */
+	LIBGLITTER_CHANNEL_RED = 0,
+
+	/**
+	 * Green primary colour
+	 */
+	LIBGLITTER_CHANNEL_GREEN = 1,
+
+	/**
+	 * Blue primary colour
+	 */
+	LIBGLITTER_CHANNEL_BLUE = 2
+};
+
+
+/**
  * Attempt to enable hardware acceleration
  * 
  * Currently this function doesn't do anything but call the
@@ -251,7 +272,28 @@ void libglitter_compose_uint8(uint8_t **, const uint8_t *restrict, size_t, size_
                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
 
 
-/* TODO add function for reordering rasters according to the subpixel layout */
+/**
+ * Reorders a set of three rasters
+ * 
+ * When the function `libglitter_create_render_context` is called,
+ * the parameter named `cellmap` contains the values 0, 1, and 2,
+ * representing different channels: indices in the raster array.
+ * The values are not necessarily 0 for red, 1 for green, and 2 for blue,
+ * but this function lets the user reorder the rasters so that before
+ * calling this function the rasters may be in this order, but when
+ * call a `libglitter_compose_*` function after calling this function,
+ * that function will write to the correct rasters
+ * 
+ * @param  rasters  The array of the three rasters, on input the rasters
+ *                  shall be in the order (0) red, (1) green, (2) blue;
+ *                  the function will reorder them
+ * @param  colour1  The colour of the channel value 0 represents in `cellmap`
+ * @param  colour2  The colour of the channel value 1 represents in `cellmap`
+ * @param  colour3  The colour of the channel value 2 represents in `cellmap`
+ *
+ * The values `colour1`, `colour2`, `colour3` must be valid but distinct
+ */
+void libglitter_reorder_rasters(void **, enum libglitter_colour, enum libglitter_colour, enum libglitter_colour);
 
 
 /**
