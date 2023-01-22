@@ -7,6 +7,14 @@
 
 
 /**
+ * The CIE xyY values of the D65 illuminant
+ */
+#define LIBGLITTER_ILLUMINANT_D65\
+	0.312726871026564878786047074755,\
+	0.329023206641284038376227272238, 1.0\
+
+
+/**
  * Rendering context for an input raster's specifications
  * 
  * Render context's are thread-safe, however updating them are not
@@ -181,6 +189,40 @@ void libglitter_desaturate_double(double **, size_t, size_t, size_t, size_t, siz
  * for details about this function
  */
 void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_t, float, const float *);
+
+
+/**
+ * Get the matrix each pixel shall be multiplied with
+ * to convert it from the output's colour space to sRGB
+ * 
+ * This is useful when the output does not use sRGB,
+ * but the application does
+ * 
+ * @param  matrix   Output buffer for the conversion matrix
+ * @param  c1x      The CIE x value (as in CIE xyY) of the output's first primary colour
+ * @param  c1y      The CIE y value (as in CIE xyY) of the output's first primary colour
+ * @param  c2x      The CIE x value (as in CIE xyY) of the output's second primary colour
+ * @param  c2y      The CIE y value (as in CIE xyY) of the output's second primary colour
+ * @param  c3x      The CIE x value (as in CIE xyY) of the output's third primary colour
+ * @param  c3y      The CIE y value (as in CIE xyY) of the output's third primary colour
+ * @param  white_x  The CIE x value (as in CIE xyY) of the output's white point
+ * @param  white_y  The CIE y value (as in CIE xyY) of the output's white point
+ * @param  white_Y  The CIE Y value (as in CIE xyY) of the output's white point
+ * 
+ * `LIBGLITTER_ILLUMINANT_D65` can be input in place of
+ * `white_x, white_y, white_Y` (it expands to three arguments)
+ * if the output's whitepoint is the D65 illuminant
+ */
+void libglitter_get_colour_space_conversion_matrix_double(double[3][3], double, double, double, double,
+                                                          double, double, double, double, double);
+
+/**
+ * This value is identical to `libglitter_get_colour_space_conversion_matrix_double`,
+ * apart from it parameter types, see `libglitter_get_colour_space_conversion_matrix_double`
+ * for details about this function
+ */
+void libglitter_get_colour_space_conversion_matrix_float(float[3][3], float, float, float, float,
+                                                         float, float, float, float, float);
 
 
 #endif

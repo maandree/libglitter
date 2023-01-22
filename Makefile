@@ -27,6 +27,8 @@ OBJ =\
 	libglitter_desaturate_float.o\
 	libglitter_create_render_context.o\
 	libglitter_free_render_context.o\
+	libglitter_get_colour_space_conversion_matrix_double.o\
+	libglitter_get_colour_space_conversion_matrix_float.o\
 	libglitter_update_render_context.o
 
 HDR =\
