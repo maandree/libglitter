@@ -6,9 +6,9 @@ static void
 multiply_33(double **outputs, size_t opos, const double **inputs, size_t ipos, const double matrix[3][3])
 {
 	double i0 = inputs[0][ipos], i1 = inputs[1][ipos], i2 = inputs[2][ipos];
-	outputs[0][opos] = i0 * matrix[0][0] + i1 * matrix[1][0] + i2 * matrix[2][0];
-	outputs[1][opos] = i0 * matrix[0][1] + i1 * matrix[1][1] + i2 * matrix[2][1];
-	outputs[2][opos] = i0 * matrix[0][2] + i1 * matrix[1][2] + i2 * matrix[2][2];
+	outputs[0][opos] = i0 * matrix[0][0] + i1 * matrix[0][1] + i2 * matrix[0][2];
+	outputs[1][opos] = i0 * matrix[1][0] + i1 * matrix[1][1] + i2 * matrix[1][2];
+	outputs[2][opos] = i0 * matrix[2][0] + i1 * matrix[2][1] + i2 * matrix[2][2];
 }
 
 
@@ -20,9 +20,9 @@ multiply_nn(size_t n, double **outputs, size_t opos, const double **inputs, size
 	for (j = 0; j < n; j++)
 		buffer[j] = inputs[j][ipos];
 	for (i = 0; i < n; i++) {
-		outputs[i][opos] = buffer[0] * matrix[0][i];
+		outputs[i][opos] = buffer[0] * matrix[i][0];
 		for (j = 1; j < n; j++)
-			outputs[i][opos] += buffer[j] * matrix[j][i];
+			outputs[i][opos] += buffer[j] * matrix[i][j];
 	}
 }
 
@@ -35,9 +35,9 @@ multiply_nm(size_t n, size_t m, double **outputs /* m */, size_t opos, const dou
 	for (j = 0; j < n; j++)
 		buffer[j] = inputs[j][ipos];
 	for (i = 0; i < m; i++) {
-		outputs[i][opos] = buffer[0] * matrix[0][i];
+		outputs[i][opos] = buffer[0] * matrix[i][0];
 		for (j = 1; j < n; j++)
-			outputs[i][opos] += buffer[j] * matrix[j][i];
+			outputs[i][opos] += buffer[j] * matrix[i][j];
 	}
 }
 

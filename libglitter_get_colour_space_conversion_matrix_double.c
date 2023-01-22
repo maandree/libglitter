@@ -12,12 +12,13 @@
 
 
 /**
- * CIE XYZ-to-sRGB conversion matrix
+ * CIE XYZ-to-sRGB conversion matrix,
+ * in column-major order
  */
 static const double srgb[3][3] = {
-	{ 3.240446254647737056586720427731, -1.537134761820080353089679192635, -0.498530193022728773666329971093},
-	{-0.969266606244679751469561779231,  1.876011959788370209167851498933,  0.041556042214430065351304932619},
-	{ 0.055643503564352832235773149705, -0.204026179735960239147729566866,  1.057226567722703292062647051353}};
+	{ 3.240446254647737056586720427731, -0.969266606244679751469561779231,  0.055643503564352832235773149705},
+	{-1.537134761820080353089679192635,  1.876011959788370209167851498933, -0.204026179735960239147729566866},
+	{-0.498530193022728773666329971093,  0.041556042214430065351304932619,  1.057226567722703292062647051353}};
 
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -26,7 +27,7 @@ static const double srgb[3][3] = {
 
 
 static void
-invert(double m[3][4])
+invert(double m[3][4]) /* row-major order */
 {
 	double t;
 	size_t i;
@@ -55,7 +56,7 @@ libglitter_get_colour_space_conversion_matrix_double(double matrix[3][3], double
 	double y1, y2, y3;
 	double z1, z2, z3;
 
-	/* Get colour space in CIE XYZ */
+	/* Get colour space in CIE XYZ (the matrix is in row-major order) */
 	mat[0][0] = x1 = X(c1x, c1y);
 	mat[0][1] = x2 = X(c2x, c2y);
 	mat[0][2] = x3 = X(c3x, c3y);
@@ -73,30 +74,25 @@ libglitter_get_colour_space_conversion_matrix_double(double matrix[3][3], double
 	y2 = mat[1][3];
 	y3 = mat[2][3];
 
-	/* [[x1, x2, x3], [y1, y2, y3], [z1, z2, z3]] is
+	/* [x1, x2, x3; y1, y2, y3; z1, z2, z3] is
 	 * the output RGB-to-CIE XYZ conversion matrix.
 	 * If sRGB is desired, it is multiplied by the
 	 * CIE XYZ-to-sRGB conversion matrix to get the
-	 * output RGB-to-sRGB conversion matrix. */
+	 * output RGB-to-sRGB conversion matrix. The
+	 * matrices are in column-major order. */
 	if (!xyz) {
-		matrix[0][0] = x1 * srgb[0][0] + x2 * srgb[1][0] + x3 * srgb[2][0];
-		matrix[0][1] = x1 * srgb[0][1] + x2 * srgb[1][1] + x3 * srgb[2][1];
-		matrix[0][2] = x1 * srgb[0][2] + x2 * srgb[1][2] + x3 * srgb[2][2];
-		matrix[1][0] = y1 * srgb[0][0] + y2 * srgb[1][0] + y3 * srgb[2][0];
-		matrix[1][1] = y1 * srgb[0][1] + y2 * srgb[1][1] + y3 * srgb[2][1];
-		matrix[1][2] = y1 * srgb[0][2] + y2 * srgb[1][2] + y3 * srgb[2][2];
-		matrix[2][0] = z1 * srgb[0][0] + z2 * srgb[1][0] + z3 * srgb[2][0];
-		matrix[2][1] = z1 * srgb[0][1] + z2 * srgb[1][1] + z3 * srgb[2][1];
-		matrix[2][2] = z1 * srgb[0][2] + z2 * srgb[1][2] + z3 * srgb[2][2];
+		matrix[0][0] = x1 * srgb[0][0] + x2 * srgb[0][1] + x3 * srgb[0][2];
+		matrix[1][0] = x1 * srgb[1][0] + x2 * srgb[1][1] + x3 * srgb[1][2];
+		matrix[2][0] = x1 * srgb[2][0] + x2 * srgb[2][1] + x3 * srgb[2][2];
+		matrix[0][1] = y1 * srgb[0][0] + y2 * srgb[0][1] + y3 * srgb[0][2];
+		matrix[1][1] = y1 * srgb[1][0] + y2 * srgb[1][1] + y3 * srgb[1][2];
+		matrix[2][1] = y1 * srgb[2][0] + y2 * srgb[2][1] + y3 * srgb[2][2];
+		matrix[0][2] = z1 * srgb[0][0] + z2 * srgb[0][1] + z3 * srgb[0][2];
+		matrix[1][2] = z1 * srgb[1][0] + z2 * srgb[1][1] + z3 * srgb[1][2];
+		matrix[2][2] = z1 * srgb[2][0] + z2 * srgb[2][1] + z3 * srgb[2][2];
 	} else {
-		matrix[0][0] = x1;
-		matrix[0][1] = x2;
-		matrix[0][2] = x3;
-		matrix[1][0] = y1;
-		matrix[1][1] = y2;
-		matrix[1][2] = y3;
-		matrix[2][0] = z1;
-		matrix[2][1] = z2;
-		matrix[2][2] = z3;
+		matrix[0][0] = x1, matrix[1][0] = x2, matrix[2][0] = x3;
+		matrix[0][1] = y1, matrix[1][1] = y2, matrix[2][1] = y3;
+		matrix[0][2] = z1, matrix[1][2] = z2, matrix[2][2] = z3;
 	}
 }

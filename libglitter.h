@@ -272,9 +272,11 @@ void libglitter_per_channel_desaturate_float(float **, size_t, size_t, size_t, s
  * uses some other colour space, this function can output
  * the conversion matrix for the CIE XYZ colour space,
  * which can that be right-hand multiplied to get the
- * conversion matrix for some other colour
+ * conversion matrix for some other colour; but be aware
+ * that the output matrix is in column-major order, not
+ * row-major order
  * 
- * @param  matrix   Output buffer for the conversion matrix
+ * @param  matrix   Output buffer for the conversion matrix, in column-major order
  * @param  c1x      The CIE x value (as in CIE xyY) of the output's first primary colour
  * @param  c1y      The CIE y value (as in CIE xyY) of the output's first primary colour
  * @param  c2x      The CIE x value (as in CIE xyY) of the output's second primary colour
@@ -329,7 +331,7 @@ void libglitter_get_colour_space_conversion_matrix_float(float[3][3], float, flo
  *                          values per cell)
  * @param  width            The horizontal number of pixels in the rasters
  * @param  height           The vertical number of pixels in the rasters
- * @param  matrix           Colour space conversion matrix
+ * @param  matrix           Colour space conversion matrix, in column-major order
  */
 void libglitter_colour_space_convert_rasters_double(size_t n, size_t m, double **, const double **,
                                                     size_t, size_t, size_t, size_t, size_t, size_t, const double[n][m]);
