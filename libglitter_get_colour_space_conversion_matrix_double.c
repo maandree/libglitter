@@ -48,7 +48,7 @@ invert(double m[3][4])
 void
 libglitter_get_colour_space_conversion_matrix_double(double matrix[3][3], double c1x, double c1y,
                                                      double c2x, double c2y, double c3x, double c3y,
-                                                     double white_x, double white_y, double white_Y)
+                                                     double white_x, double white_y, double white_Y, int xyz)
 {
 	double mat[3][4];
 	double x1, x2, x3;
@@ -74,17 +74,29 @@ libglitter_get_colour_space_conversion_matrix_double(double matrix[3][3], double
 	y3 = mat[2][3];
 
 	/* [[x1, x2, x3], [y1, y2, y3], [z1, z2, z3]] is
-	 * the output RGB-to-CIE XYZ conversion matrix. It
-	 * is multiplied by the CIE XYZ-to-sRGB conversion
-	 * matrix to get the output RGB-to-sRGB conversion
-	 * matrix. */
-	matrix[0][0] = x1 * srgb[0][0] + x2 * srgb[1][0] + x3 * srgb[2][0];
-	matrix[0][1] = x1 * srgb[0][1] + x2 * srgb[1][1] + x3 * srgb[2][1];
-	matrix[0][2] = x1 * srgb[0][2] + x2 * srgb[1][2] + x3 * srgb[2][2];
-	matrix[1][0] = y1 * srgb[0][0] + y2 * srgb[1][0] + y3 * srgb[2][0];
-	matrix[1][1] = y1 * srgb[0][1] + y2 * srgb[1][1] + y3 * srgb[2][1];
-	matrix[1][2] = y1 * srgb[0][2] + y2 * srgb[1][2] + y3 * srgb[2][2];
-	matrix[2][0] = z1 * srgb[0][0] + z2 * srgb[1][0] + z3 * srgb[2][0];
-	matrix[2][1] = z1 * srgb[0][1] + z2 * srgb[1][1] + z3 * srgb[2][1];
-	matrix[2][2] = z1 * srgb[0][2] + z2 * srgb[1][2] + z3 * srgb[2][2];
+	 * the output RGB-to-CIE XYZ conversion matrix.
+	 * If sRGB is desired, it is multiplied by the
+	 * CIE XYZ-to-sRGB conversion matrix to get the
+	 * output RGB-to-sRGB conversion matrix. */
+	if (!xyz) {
+		matrix[0][0] = x1 * srgb[0][0] + x2 * srgb[1][0] + x3 * srgb[2][0];
+		matrix[0][1] = x1 * srgb[0][1] + x2 * srgb[1][1] + x3 * srgb[2][1];
+		matrix[0][2] = x1 * srgb[0][2] + x2 * srgb[1][2] + x3 * srgb[2][2];
+		matrix[1][0] = y1 * srgb[0][0] + y2 * srgb[1][0] + y3 * srgb[2][0];
+		matrix[1][1] = y1 * srgb[0][1] + y2 * srgb[1][1] + y3 * srgb[2][1];
+		matrix[1][2] = y1 * srgb[0][2] + y2 * srgb[1][2] + y3 * srgb[2][2];
+		matrix[2][0] = z1 * srgb[0][0] + z2 * srgb[1][0] + z3 * srgb[2][0];
+		matrix[2][1] = z1 * srgb[0][1] + z2 * srgb[1][1] + z3 * srgb[2][1];
+		matrix[2][2] = z1 * srgb[0][2] + z2 * srgb[1][2] + z3 * srgb[2][2];
+	} else {
+		matrix[0][0] = x1;
+		matrix[0][1] = x2;
+		matrix[0][2] = x3;
+		matrix[1][0] = y1;
+		matrix[1][1] = y2;
+		matrix[1][2] = y3;
+		matrix[2][0] = z1;
+		matrix[2][1] = z2;
+		matrix[2][2] = z3;
+	}
 }

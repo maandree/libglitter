@@ -212,27 +212,67 @@ void libglitter_split_uint32_raster(uint8_t *[3], uint8_t **, uint32_t *, uint32
  * @param  height      The vertical number of pixels in the rasters
  * @param  saturation  The subpixel rendering saturation, 1 for regular
  *                     subpixel rendering, 0 for greyscale, values
- *                     inbetween for a compromise
+ *                     in between for a compromise
  * @param  primary_ys  The CIE Y value (in e.g. CIE xyY or CIE XYZ) for
  *                     each subpixel colour; or `NULL` for the sRGB values
  *                     (this is only allowed if there are exactly 3 rasters)
  */
-void libglitter_desaturate_double(double **, size_t, size_t, size_t, size_t, size_t, double, const double *);
+void libglitter_desaturate_double(double **, size_t, size_t, size_t, size_t, size_t, double, const double *restrict);
 
 /**
  * This value is identical to `libglitter_desaturate_double`,
  * apart from it parameter types, see `libglitter_desaturate_double`
  * for details about this function
  */
-void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_t, float, const float *);
+void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_t, float, const float *restrict);
+
+/**
+ * Transform rasters from fully using subpixel rendering to
+ * balance between subpixel rendering and greyscale antialiasing
+ * 
+ * @param  rasters      Array of rasters, one for each subpixel colour.
+ *                      The function may change the offset for each raster,
+ *                      as such, the given pointer shall not be used anywhere
+ *                      else during the execution of the function and the
+ *                      inner pointers shall be considered undefined after
+ *                      the execution of the function
+ * @param  nrasters     The number of rasters
+ * @param  rowsize      The number of cells in a row in each raster
+ * @param  cellsize     The number of values stored in each raster,
+ *                      between each cell, plus 1 (that is, the number of
+ *                      values per cell)
+ * @param  width        The horizontal number of pixels in the rasters
+ * @param  height       The vertical number of pixels in the rasters
+ * @param  saturations  The subpixel rendering saturation for each raster,
+ *                      1 for regular subpixel rendering, 0 for greyscale,
+ *                      values in between for a compromise
+ * @param  primary_ys   The CIE Y value (in e.g. CIE xyY or CIE XYZ) for
+ *                      each subpixel colour; or `NULL` for the sRGB values
+ *                      (this is only allowed if there are exactly 3 rasters)
+ */
+void libglitter_per_channel_desaturate_double(double **, size_t, size_t, size_t, size_t, size_t,
+                                              const double *restrict, const double *restrict);
+
+/**
+ * This value is identical to `libglitter_per_channel_desaturate_double`,
+ * apart from it parameter types, see `libglitter_per_channel_desaturate_double`
+ * for details about this function
+ */
+void libglitter_per_channel_desaturate_float(float **, size_t, size_t, size_t, size_t, size_t,
+                                             const float *restrict, const float *restrict);
 
 
 /**
  * Get the matrix each pixel shall be multiplied with
  * to convert it from the output's colour space to sRGB
+ * or CIE XYZ
  * 
- * This is useful when the output does not use sRGB,
- * but the application does
+ * This is useful when the output does not use sRGB, or
+ * CIE XYZ, but the application does. If the application
+ * uses some other colour space, this function can output
+ * the conversion matrix for the CIE XYZ colour space,
+ * which can that be right-hand multiplied to get the
+ * conversion matrix for some other colour
  * 
  * @param  matrix   Output buffer for the conversion matrix
  * @param  c1x      The CIE x value (as in CIE xyY) of the output's first primary colour
@@ -244,13 +284,14 @@ void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_
  * @param  white_x  The CIE x value (as in CIE xyY) of the output's white point
  * @param  white_y  The CIE y value (as in CIE xyY) of the output's white point
  * @param  white_Y  The CIE Y value (as in CIE xyY) of the output's white point, normally 1
+ * @param  xyz      Whether the output conversion matrix should be to CIE XYZ rather the sRGB
  * 
  * `LIBGLITTER_ILLUMINANT_D65` can be input in place of
  * `white_x, white_y, white_Y` (it expands to three arguments)
  * if the output's whitepoint is the D65 illuminant
  */
 void libglitter_get_colour_space_conversion_matrix_double(double[3][3], double, double, double, double,
-                                                          double, double, double, double, double);
+                                                          double, double, double, double, double, int);
 
 /**
  * This value is identical to `libglitter_get_colour_space_conversion_matrix_double`,
@@ -258,7 +299,7 @@ void libglitter_get_colour_space_conversion_matrix_double(double[3][3], double, 
  * for details about this function
  */
 void libglitter_get_colour_space_conversion_matrix_float(float[3][3], float, float, float, float,
-                                                         float, float, float, float, float);
+                                                         float, float, float, float, float, int);
 
 
 #endif
