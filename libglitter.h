@@ -157,12 +157,15 @@ void libglitter_compose_uint8(uint8_t **, const uint8_t *restrict, size_t, size_
                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
 
 
+/* TODO add function for reordering rasters according to the subpixel layout */
+
+
 /**
  * Splits a `uint64_t` raster into one `uint16_t` raster per channel
  * 
  * @param  rasters   Output array for the rasters, they will be in the
  *                   order (0) red, (1) green, (2) blue
- * @param  alphap    Output parameter for the alpha mask rasters, or `NULL`
+ * @param  alphap    Output parameter for the alpha mask raster, or `NULL`
  * @param  raster    The raster that is being split
  * @param  red       The value `0xFFFF` shifted such that value
  *                   expresses pure red (closest primary colour)
@@ -178,7 +181,7 @@ void libglitter_split_uint64_raster(uint16_t *[3], uint16_t **, uint64_t *, uint
  * 
  * @param  rasters   Output array for the rasters, they will be in the
  *                   order (0) red, (1) green, (2) blue
- * @param  alphap    Output parameter for the alpha mask rasters, or `NULL`
+ * @param  alphap    Output parameter for the alpha mask raster, or `NULL`
  * @param  raster    The raster that is being split
  * @param  red       The value `0xFF` shifted such that value
  *                   expresses pure red (closest primary colour)
