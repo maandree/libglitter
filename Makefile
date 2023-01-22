@@ -29,6 +29,8 @@ OBJ =\
 	libglitter_free_render_context.o\
 	libglitter_get_colour_space_conversion_matrix_double.o\
 	libglitter_get_colour_space_conversion_matrix_float.o\
+	libglitter_split_uint32_raster.o\
+	libglitter_split_uint64_raster.o\
 	libglitter_update_render_context.o
 
 HDR =\
@@ -47,6 +49,7 @@ libglitter_compose_uint32.o: libglitter_compose_uint64.c libglitter_compose_doub
 libglitter_compose_uint64.o: libglitter_compose_double.c
 libglitter_compose_uint8.o: libglitter_compose_uint64.c libglitter_compose_double.c
 libglitter_desaturate_float.o: libglitter_desaturate_double.c
+libglitter_split_uint32_raster.o: libglitter_split_uint64_raster.c
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)

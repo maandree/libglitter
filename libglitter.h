@@ -158,6 +158,39 @@ void libglitter_compose_uint8(uint8_t **, const uint8_t *restrict, size_t, size_
 
 
 /**
+ * Splits a `uint64_t` raster into one `uint16_t` raster per channel
+ * 
+ * @param  rasters   Output array for the rasters, they will be in the
+ *                   order (0) red, (1) green, (2) blue
+ * @param  alphap    Output parameter for the alpha mask rasters, or `NULL`
+ * @param  raster    The raster that is being split
+ * @param  red       The value `0xFFFF` shifted such that value
+ *                   expresses pure red (closest primary colour)
+ * @param  green     The value `0xFFFF` shifted such that value
+ *                   expresses pure green (closest primary colour)
+ * @param  blue      The value `0xFFFF` shifted such that value
+ *                   expresses pure blue (closest primary colour)
+ */
+void libglitter_split_uint64_raster(uint16_t *[3], uint16_t **, uint64_t *, uint64_t, uint64_t, uint64_t);
+
+/**
+ * Splits a `uint32_t` raster into one `uint8_t` raster per channel
+ * 
+ * @param  rasters   Output array for the rasters, they will be in the
+ *                   order (0) red, (1) green, (2) blue
+ * @param  alphap    Output parameter for the alpha mask rasters, or `NULL`
+ * @param  raster    The raster that is being split
+ * @param  red       The value `0xFF` shifted such that value
+ *                   expresses pure red (closest primary colour)
+ * @param  green     The value `0xFF` shifted such that value
+ *                   expresses pure green (closest primary colour)
+ * @param  blue      The value `0xFF` shifted such that value
+ *                   expresses pure blue (closest primary colour)
+ */
+void libglitter_split_uint32_raster(uint8_t *[3], uint8_t **, uint32_t *, uint32_t, uint32_t, uint32_t);
+
+
+/**
  * Transform rasters from fully using subpixel rendering to
  * balance between subpixel rendering and greyscale antialiasing
  * 
