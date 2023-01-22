@@ -1,4 +1,5 @@
 Add colour space conversion
+Add transfer function application function
 Add support for GPU-acceleration
 Add man pages
 Add tests

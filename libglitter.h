@@ -207,7 +207,7 @@ void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_
  * @param  c3y      The CIE y value (as in CIE xyY) of the output's third primary colour
  * @param  white_x  The CIE x value (as in CIE xyY) of the output's white point
  * @param  white_y  The CIE y value (as in CIE xyY) of the output's white point
- * @param  white_Y  The CIE Y value (as in CIE xyY) of the output's white point
+ * @param  white_Y  The CIE Y value (as in CIE xyY) of the output's white point, normally 1
  * 
  * `LIBGLITTER_ILLUMINANT_D65` can be input in place of
  * `white_x, white_y, white_Y` (it expands to three arguments)
