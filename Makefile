@@ -25,6 +25,7 @@ OBJ =\
 	libglitter_compose_uint32.o\
 	libglitter_compose_uint64.o\
 	libglitter_compose_uint8.o\
+	libglitter_enable_acceleration.o\
 	libglitter_desaturate_double.o\
 	libglitter_desaturate_float.o\
 	libglitter_create_render_context.o\

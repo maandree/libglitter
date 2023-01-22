@@ -7,6 +7,62 @@
 
 
 /**
+ * The application will use `double`-typed rasters
+ */
+#define LIBGLITTER_FEATURE_DOUBLE_TYPE  UINT64_C(0x0000000000000001)
+
+/**
+ * The application will use `float`-typed rasters
+ */
+#define LIBGLITTER_FEATURE_FLOAT_TYPE   UINT64_C(0x0000000000000002)
+
+/**
+ * The application will use `uint64_t`-typed rasters
+ */
+#define LIBGLITTER_FEATURE_UINT64_TYPE  UINT64_C(0x0000000000000004)
+
+/**
+ * The application will use `uint32_t`-typed rasters
+ */
+#define LIBGLITTER_FEATURE_UINT32_TYPE  UINT64_C(0x0000000000000008)
+
+/**
+ * The application will use `uint16_t`-typed rasters
+ */
+#define LIBGLITTER_FEATURE_UINT16_TYPE  UINT64_C(0x0000000000000010)
+
+/**
+ * The application will use `uint8_t`-typed rasters
+ */
+#define LIBGLITTER_FEATURE_UINT8_TYPE   UINT64_C(0x0000000000000020)
+
+/**
+ * The allocation will use at least one of the functions
+ * `libglitter_compose_double`,
+ * `libglitter_compose_float`,
+ * `libglitter_compose_uint64`,
+ * `libglitter_compose_uint32`,
+ * `libglitter_compose_uint16`, and
+ * `libglitter_compose_uint8`
+ */
+#define LIBGLITTER_FEATURE_COMPOSE      UINT64_C(0x0000000000000040)
+
+/**
+ * The allocation will use at least one of the functions
+ * `libglitter_desaturate_double`, and
+ * `libglitter_desaturate_float`
+ */
+#define LIBGLITTER_FEATURE_DESATURATION UINT64_C(0x0000000000000080)
+
+/**
+ * The allocation will use at least one of the functions
+ * `libglitter_colour_space_convert_rasters_double`, and
+ * `libglitter_colour_space_convert_rasters_float`
+ */
+#define LIBGLITTER_FEATURE_COLOUR_SPACE UINT64_C(0x0000000000000100)
+
+
+/**
  * The CIE xyY values of the D65 illuminant
  */
 #define LIBGLITTER_ILLUMINANT_D65\
@@ -20,6 +76,44 @@
  * Render context's are thread-safe, however updating them are not
  */
 typedef struct libglitter_render_context LIBGLITTER_RENDER_CONTEXT;
+
+
+/**
+ * Attempt to enable hardware acceleration
+ * 
+ * Currently this function doesn't do anything but call the
+ * callback function and return 0; it is provided for application
+ * to use know and get hardware acceleration when it is implemented
+ * 
+ * @param   features  Set of features to enable hardware acceleration
+ *                    for, unrecognised bits are silently ignored.
+ *                    Recognised bit values are:
+ *                    - LIBGLITTER_FEATURE_DOUBLE_TYPE,
+ *                    - LIBGLITTER_FEATURE_FLOAT_TYPE,
+ *                    - LIBGLITTER_FEATURE_UINT64_TYPE,
+ *                    - LIBGLITTER_FEATURE_UINT32_TYPE,
+ *                    - LIBGLITTER_FEATURE_UINT16_TYPE,
+ *                    - LIBGLITTER_FEATURE_UINT8_TYPE,
+ *                    - LIBGLITTER_FEATURE_COMPOSE,
+ *                    - LIBGLITTER_FEATURE_DESATURATION, and
+ *                    - LIBGLITTER_FEATURE_COLOUR_SPACE.
+ * @param   async     Whether the function shall return immediately
+ *                    rather than when complete
+ * @param   callback  Callback function that is called at function
+ *                    completion, the first argument will be either
+ *                    1 on success with hardware acceleration enabled,
+ *                    0 on success without hardware acceleration enabled,
+ *                    or -1 on failure; the second argument will be 0
+ *                    on success or an error code on failure; the third
+ *                    argument will be `userdata`. This argument may
+ *                    also be `NULL` if no callback function shall be
+ *                    called
+ * @param   userdata  User-specific data to pass into `callback`, may be `NULL`
+ * @return            1 on success with hardware acceleration enabled,
+ *                    0 on success without hardware acceleration enabled,
+ *                    or -1 on failure
+ */
+int libglitter_enable_acceleration(uint64_t, int, void (*)(int, int, void *), void *);
 
 
 /**
