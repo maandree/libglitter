@@ -469,16 +469,16 @@ void libglitter_get_colour_space_conversion_matrix_float(float[3][3], float, flo
  * @param  height           The vertical number of pixels in the rasters
  * @param  matrix           Colour space conversion matrix, in column-major order
  */
-void libglitter_colour_space_convert_rasters_double(size_t n, size_t m, double **, const double **,
-                                                    size_t, size_t, size_t, size_t, size_t, size_t, const double[n][m]);
+void libglitter_colour_space_convert_rasters_double(size_t n, size_t m, double **, const double **, size_t,
+                                                    size_t, size_t, size_t, size_t, size_t, const double[n][m]);
 
 /**
  * This value is identical to `libglitter_colour_space_convert_rasters_double`,
  * apart from it parameter types, see `libglitter_colour_space_convert_rasters_double`
  * for details about this function
  */
-void libglitter_colour_space_convert_rasters_float(size_t n, size_t m, float **, const float **,
-                                                   size_t, size_t, size_t, size_t, size_t, size_t, const float[n][m]);
+void libglitter_colour_space_convert_rasters_float(size_t n, size_t m, float **, const float **, size_t,
+                                                   size_t, size_t, size_t, size_t, size_t, const float[n][m]);
 
 
 #endif

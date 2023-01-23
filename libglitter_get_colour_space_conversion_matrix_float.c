@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#ifndef TEST
 
 
 void
@@ -23,3 +24,16 @@ libglitter_get_colour_space_conversion_matrix_float(float matrix[3][3], float c1
 	matrix[2][1] = (float)double_matrix[2][1];
 	matrix[2][2] = (float)double_matrix[2][2];
 }
+
+
+#else
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+#endif

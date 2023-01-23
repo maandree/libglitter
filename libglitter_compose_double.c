@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#ifndef TEST
 
 
 static void
@@ -56,7 +57,7 @@ hstrips(double **outputs_, const double *restrict input, size_t output_rowsize, 
 }
 
 
-#ifndef ONLY_INT_COMPATIBLE
+# ifndef ONLY_INT_COMPATIBLE
 
 
 static void
@@ -109,4 +110,19 @@ libglitter_compose_double(double **outputs, const double *restrict input, size_t
 }
 
 
+# endif
+
+
+#else
+# ifndef ONLY_INT_COMPATIBLE
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+# endif
 #endif

@@ -1,5 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#ifndef TEST
+
 
 #define X(x, y) ((x) / (y))
 #define Z(x, y) ((1 - (x)) / (y) - 1)
@@ -96,3 +98,16 @@ libglitter_get_colour_space_conversion_matrix_double(double matrix[3][3], double
 		matrix[0][2] = z1, matrix[1][2] = z2, matrix[2][2] = z3;
 	}
 }
+
+
+#else
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+#endif

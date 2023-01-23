@@ -9,6 +9,7 @@
 # define greater_t double
 # define MIX(A, B) (((A) >> 1) + ((B) >> 1) + ((A) & (B) & 1))
 #endif
+#ifndef TEST
 
 
 static void
@@ -90,3 +91,16 @@ libglitter_compose_uint64(uint64_t **outputs, const uint64_t *restrict input, si
 		        render_ctx->cellmap, render_ctx->ncellvalues);
 	}
 }
+
+
+#else
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+#endif

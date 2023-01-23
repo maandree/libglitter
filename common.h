@@ -6,6 +6,7 @@
 #include <alloca.h>
 #include <math.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -29,5 +30,17 @@ struct libglitter_render_context {
 	float *restrict cellweights_float;
 };
 
+
+#ifdef TEST
+
+# define ASSERT(ASSERTION)\
+	do {\
+		if (!(ASSERTION)) {\
+			fprintf(stderr, "Failed assertion at line %i: %s\n", __LINE__, #ASSERTION);\
+			exit(1);\
+		}\
+	} while (0)
+
+#endif
 
 #endif

@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#ifndef TEST
 
 
 static void
@@ -73,3 +74,16 @@ libglitter_colour_space_convert_rasters_double(size_t n, size_t m, double **outp
 				multiply_nm(n, m, outputs, output_i, inputs, input_i, matrix, buffer);
 	}
 }
+
+
+#else
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+#endif

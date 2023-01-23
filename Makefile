@@ -44,9 +44,10 @@ HDR =\
 	libglitter.h
 
 LOBJ = $(OBJ:.o=.lo)
+TESTS = $(OBJ:.o=.test)
 
 
-all: libglitter.a libglitter.$(LIBEXT)
+all: libglitter.a libglitter.$(LIBEXT) $(TESTS)
 $(OBJ): $(HDR)
 $(LOBJ): $(HDR)
 libglitter_compose_float.o: libglitter_compose_double.c
@@ -57,12 +58,16 @@ libglitter_compose_uint8.o: libglitter_compose_uint64.c libglitter_compose_doubl
 libglitter_desaturate_float.o: libglitter_desaturate_double.c
 libglitter_per_channel_desaturate_float.o: libglitter_per_channel_desaturate_double.c
 libglitter_split_uint32_raster.o: libglitter_split_uint64_raster.c
+$(TESTS): $(HDR) libglitter.a
 
 .c.o:
 	$(CC) -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
 
 .c.lo:
 	$(CC) -fPIC -c -o $@ $< $(CFLAGS) $(CPPFLAGS)
+
+.c.test:
+	$(CC) -o $@ $< libglitter.a $(CFLAGS) $(CPPFLAGS) -DTEST $(LDFLAGS)
 
 libglitter.a: $(OBJ)
 	@rm -f -- $@
@@ -71,6 +76,9 @@ libglitter.a: $(OBJ)
 
 libglitter.$(LIBEXT): $(LOBJ)
 	$(CC) $(LIBFLAGS) -o $@ $(LOBJ) $(LDFLAGS)
+
+check: $(TESTS)
+	@for t in $(TESTS); do printf './%s\n' $$t; ./$$t || exit 1; done
 
 install: libglitter.a libglitter.$(LIBEXT)
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/lib"
@@ -90,10 +98,10 @@ uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/include/libglitter.h"
 
 clean:
-	-rm -f -- *.o *.a *.lo *.su *.so *.so.* *.dll *.dylib
+	-rm -f -- *.o *.a *.lo *.su *.so *.so.* *.dll *.dylib *.test
 	-rm -f -- *.gch *.gcov *.gcno *.gcda *.$(LIBEXT)
 
 .SUFFIXES:
-.SUFFIXES: .lo .o .c
+.SUFFIXES: .lo .o .c .test
 
-.PHONY: all install uninstall clean
+.PHONY: all check install uninstall clean

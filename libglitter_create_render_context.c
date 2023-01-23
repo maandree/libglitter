@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#ifndef TEST
 
 
 LIBGLITTER_RENDER_CONTEXT *
@@ -45,3 +46,16 @@ fail:
 	libglitter_free_render_context(this);
 	return NULL;
 }
+
+
+#else
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+#endif

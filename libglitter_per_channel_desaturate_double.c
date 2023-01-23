@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#ifndef TEST
 
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -47,3 +48,16 @@ libglitter_per_channel_desaturate_double(double **rasters, size_t nrasters, size
 		}
 	}
 }
+
+
+#else
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+#endif

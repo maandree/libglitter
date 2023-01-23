@@ -1,5 +1,6 @@
 /* See LICENSE file for copyright and license details. */
 #include "common.h"
+#ifndef TEST
 
 
 void
@@ -26,3 +27,16 @@ libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *this, size_t rowsize
 			this->cells[2][1] = this->cells[2][0];
 	}
 }
+
+
+#else
+
+
+int
+main(void)
+{
+	return 0; /* TODO add test */
+}
+
+
+#endif
