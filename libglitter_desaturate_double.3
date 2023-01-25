@@ -105,6 +105,13 @@ chroma as CIE xy values, and the output's white point, the
 and
 .BR libglitter_get_colour_model_conversion_matrix_float (3)
 can calculate and output the primary colour's CIE Y values.
+If
+.I nrasters
+is 3 and the order of the rasters is (0) red, (1) green, (2) blue,
+.I primary_ys
+can also be
+.IR NULL ,
+in which case the appropriate values for the sRGB colour model is used.
 .PP
 By default, these functions do not use hardware acceleration,
 they run on the CPU. However the
