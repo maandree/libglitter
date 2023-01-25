@@ -1,0 +1,141 @@
+.TH LIBGLITTER_*DESATURATE_* 3 LIBGLITTER
+.SH NAME
+libglitter_*desature_* - Create a blend between subpixel- and greyscale-antialiasing
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+void libglitter_desaturate_double(double **\fIrasters\fP, size_t \fInrasters\fP,
+                                  size_t \fIrowsize\fP, size_t \fIcellsize\fP,
+                                  size_t \fIwidth\fP, size_t \fIheight\fP,
+                                  double \fIsaturation\fP,
+                                  const double *\fIprimary_ys\fP);
+
+void libglitter_desaturate_float(float **\fIrasters\fP, size_t \fInrasters\fP,
+                                 size_t \fIrowsize\fP, size_t \fIcellsize\fP,
+                                 size_t \fIwidth\fP, size_t \fIheight\fP,
+                                 float \fIsaturation\fP,
+                                 const float *\fIprimary_ys\fP);
+
+void libglitter_per_channel_desaturate_double(double **\fIrasters\fP, size_t \fInrasters\fP,
+                                              size_t \fIrowsize\fP, size_t \fIcellsize\fP,
+                                              size_t \fIwidth\fP, size_t \fIheight\fP,
+                                              const double \fIsaturations\fP,
+                                              const double *\fIprimary_ys\fP);
+
+void libglitter_per_channel_desaturate_float(float **\fIrasters\fP, size_t \fInrasters\fP,
+                                             size_t \fIrowsize\fP, size_t \fIcellsize\fP,
+                                             size_t \fIwidth\fP, size_t \fIheight\fP,
+                                             const float \fIsaturations\fP,
+                                             const float *\fIprimary_ys\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter -lm" .
+.SH DESCRIPTION
+The
+.BR libglitter_desaturate_double (),
+.BR libglitter_desaturate_float (),
+.BR libglitter_per_channel_desaturate_double (),
+and
+.BR libglitter_per_channel_desaturate_float (),
+functions desaturates a set of corasters (makes them more grey).
+.PP
+.I rasters
+shall be the list of rasters, which are modified in place.
+The function may offset the input pointers in this list
+during execution. Therefore, the contents of this list shall
+be considered undefined immediately when the function is
+called, and may not be modified before the function terminates.
+The application must therefore have the pointers to these
+rasters saved elsewhere.
+.PP
+The number of rasters shall be specified as the
+.I nrasters
+argument.
+.PP
+.I cellsize
+shall be the number of elements in a raster the pointer
+to the raster must be offset with to get to a pointer to
+the next cell in the raster.
+.PP
+.I rowsize
+shall be the number of cells (not elements; but rather the
+number of elements divided by
+.IR input_cellsize )
+in a raster the pointer to the raster must be offset with
+to get a pointer to the next row but the same column in
+the raster
+.PP
+.I width
+and
+.I height
+shall describe the affected area in the rasters.
+.I width
+shall be the number of pixels the rasters have
+horizontally, and 
+.I height
+shall be the number of pixels the rasters have
+vertically.
+.PP
+For the
+.BR libglitter_desaturate_double ()
+and
+.BR libglitter_desaturate_float ()
+functions, the
+.I saturation
+argument shall be how saturated the subpixel-antialiasing shall
+be, where 0 renders greyscale-antialiasing and 1 renders regular
+subpixel-antialiasing. For the
+.BR libglitter_per_channel_desaturate_double ()
+and
+.BR libglitter_per_channel_desaturate_float ()
+functions this parameter is replaced with the
+.I saturations
+parameter which shall be a list of one saturation value per
+raster: these functions let the user desaturate each channel
+by a different amount.
+.PP
+Each primary colour's CIE Y value shall be provided via the
+.I primary_ys
+parameter. If you only have the output's primary colours'
+chroma as CIE xy values, and the output's white point, the
+.BR libglitter_get_colour_model_conversion_matrix_double (3)
+and
+.BR libglitter_get_colour_model_conversion_matrix_float (3)
+can calculate and output the primary colour's CIE Y values.
+.PP
+By default, these functions do not use hardware acceleration,
+they run on the CPU. However the
+.BR libglitter_enable_acceleration (3)
+may be able to enable hardware acceleration for these
+functions. It will require at least the following bits in
+its first argument to enable hardware acceleration:
+.RS
+.TP
+.I LIBGLITTER_FEATURE_CU_DESATURATION | LIBGLITTER_FEATURE_DOUBLE_TYPE
+for
+.BR libglitter_desaturate_double (),
+.TP
+.I LIBGLITTER_FEATURE_CU_DESATURATION | LIBGLITTER_FEATURE_FLOAT_TYPE
+for
+.BR libglitter_desaturate_float (),
+.TP
+.I LIBGLITTER_FEATURE_PC_DESATURATION | LIBGLITTER_FEATURE_DOUBLE_TYPE
+for
+.BR libglitter_per_channel_desaturate_double (),
+or
+.TP
+.I LIBGLITTER_FEATURE_PC_DESATURATION | LIBGLITTER_FEATURE_FLOAT_TYPE
+for
+.BR libglitter_per_channel_desaturate_float ().
+.RE
+.SH RETURN VALUES
+None.
+.SH ERRORS
+None.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_colour_model_convert_rasters_double (3),
+.BR libglitter_compose_double (3)

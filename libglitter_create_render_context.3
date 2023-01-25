@@ -1,0 +1,137 @@
+.TH LIBGLITTER_*_RENDER_CONTEXT 3 LIBGLITTER
+.SH NAME
+libglitter_create_render_context - Precompute data for libglitter_compose_*(3)
+.br
+libglitter_update_render_context - Precompute data for updated information for libglitter_compose_*(3)
+.br
+libglitter_free_render_context - Deallocate precompute data for libglitter_compose_*(3)
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+LIBGLITTER_RENDER_CONTEXT *
+libglitter_create_render_context(size_t \fInoutputs\fP, size_t \fIrowsize\fP,
+                                 size_t \fIwidthmul\fP, size_t \fIheightmul\fP,
+                                 const uint8_t *\fIcellmap\fP,
+                                 const uint8_t *\fIncellvalues\fP);
+
+void libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *\fIthis\fP, size_t \fIrowsize\fP);
+
+void libglitter_free_render_context(LIBGLITTER_RENDER_CONTEXT *\fIthis\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter" .
+.SH DESCRIPTION
+The
+.BR libglitter_create_render_context ()
+function precalculates information required for the
+.BR libglitter_compose_double (3)
+function and similar functions.
+.PP
+The
+.I noutputs
+argument shall be the number of rasters the
+.BR libglitter_compose_double (3)
+function and similar functions, output to; that is,
+the number of primary colours of the output (normally
+three: red, green, and blue).
+.PP
+The
+.I rowsize
+argument shall the number of cells the input raster
+has per row. It required that the input raster's
+cells are contigious for each row, meaning that
+moving one element over moves one cell over, so
+there is not cell size parameter. If the input
+raster is modified to have a different number of
+cellss per row, the returned object must be updated
+using the
+.BR libglitter_update_render_context ()
+function.
+.PP
+The
+.I widthmul
+argument shall be the number of cells the input
+raster has in the horizontal dimension per pixel.
+For the standard horizontally stacked vertical
+stripes for red, green, and blue, this value is
+three. A cell is not necessarily a subpixel, in
+some layouts, some subpixels occupy multiple cells.
+.PP
+The
+.I heighmul
+argument shall be the number of cells the input
+raster has in the vertical dimension per pixel.
+For the standard horizontally stacked vertical
+stripes for red, green, and blue, this value is
+one.
+.PP
+The
+.I cellmap
+argument shall be a list of size
+.IR (heightmul*widthmul) ,
+more specifically, it shall be a row-major matrix
+of height
+.I heightmul
+and width
+.IR widthmul .
+Its elements shall be values in [0,
+.IR noutputs ),
+specifying which subpixel occupies each cell
+for any pixel in the input raster.
+.PP
+Any pointer output by the
+.BR libglitter_create_render_context ()
+function can, and (unless it is the null pointer)
+should be, deallocated using the
+.BR libglitter_free_render_context ()
+function.
+.PP
+For any value
+.I i
+in [0,
+.IR noutputs ),
+.I ncellvalues[i]
+shall be the number of times the value
+.I i
+appears in
+.IR cellmap .
+.RE
+.SH RETURN VALUES
+The
+.BR libglitter_create_render_context ()
+function returns, upon successful completion,
+a pointer to newly allocated memory. On failure,
+it returns
+.IR NULL .
+.PP
+The
+.BR libglitter_update_render_context ()
+and
+.BR libglitter_free_render_context ()
+functions do not return any value.
+.SH ERRORS
+The
+.BR libglitter_create_render_context ()
+can fail with the following errors:
+.TP
+.B ENOMEM
+Could not allocate enough memory.
+.PP
+The
+.BR libglitter_update_render_context ()
+and
+.BR libglitter_free_render_context ()
+functions cannot fail.
+.SH NOTES
+In some (common) cases, the library infer the
+values stored in
+.I ncellvalues
+rather than read
+.IR ncellvalues .
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_compose_double (3),
+.BR libglitter_reorder_rasters (3)

@@ -4,10 +4,11 @@
 
 
 int
-libglitter_enable_acceleration(uint64_t features, int async, void (*callback)(int r, int e, void *u), void *userdata)
+libglitter_enable_acceleration(uint64_t features, int async, void (*callback)(int r, int e, void *u), void *userdata, void *unused)
 {
 	(void) features;
 	(void) async;
+	(void) unused;
 
 	/* TODO add support for hardware acceleration */
 
@@ -45,30 +46,30 @@ int
 main(void)
 {
 	char data = 'u';
-	ASSERT(!libglitter_enable_acceleration(0, 0, NULL, NULL));
-	ASSERT(!libglitter_enable_acceleration(0, 1, NULL, NULL));
-	ASSERT(!libglitter_enable_acceleration(~0, 0, NULL, NULL));
-	ASSERT(!libglitter_enable_acceleration(~0, 1, NULL, NULL));
-	ASSERT(!libglitter_enable_acceleration(0, 0, NULL, &data));
-	ASSERT(!libglitter_enable_acceleration(0, 1, NULL, &data));
-	ASSERT(!libglitter_enable_acceleration(~0, 0, NULL, &data));
-	ASSERT(!libglitter_enable_acceleration(~0, 1, NULL, &data));
+	ASSERT(!libglitter_enable_acceleration(0, 0, NULL, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(0, 1, NULL, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(~0, 0, NULL, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(~0, 1, NULL, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(0, 0, NULL, &data, NULL));
+	ASSERT(!libglitter_enable_acceleration(0, 1, NULL, &data, NULL));
+	ASSERT(!libglitter_enable_acceleration(~0, 0, NULL, &data, NULL));
+	ASSERT(!libglitter_enable_acceleration(~0, 1, NULL, &data, NULL));
 	ASSERT(callback_calls == 0);
-	ASSERT(!libglitter_enable_acceleration(0, 0, callback, &data));
+	ASSERT(!libglitter_enable_acceleration(0, 0, callback, &data, NULL));
 	ASSERT(callback_calls == 1);
-	ASSERT(!libglitter_enable_acceleration(0, 1, callback, &data));
+	ASSERT(!libglitter_enable_acceleration(0, 1, callback, &data, NULL));
 	ASSERT(callback_calls == 2);
-	ASSERT(!libglitter_enable_acceleration(~0, 0, callback, &data));
+	ASSERT(!libglitter_enable_acceleration(~0, 0, callback, &data, NULL));
 	ASSERT(callback_calls == 3);
-	ASSERT(!libglitter_enable_acceleration(~0, 1, callback, &data));
+	ASSERT(!libglitter_enable_acceleration(~0, 1, callback, &data, NULL));
 	ASSERT(callback_calls == 4);
-	ASSERT(!libglitter_enable_acceleration(0, 0, callback_null, NULL));
+	ASSERT(!libglitter_enable_acceleration(0, 0, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 5);
-	ASSERT(!libglitter_enable_acceleration(0, 1, callback_null, NULL));
+	ASSERT(!libglitter_enable_acceleration(0, 1, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 6);
-	ASSERT(!libglitter_enable_acceleration(~0, 0, callback_null, NULL));
+	ASSERT(!libglitter_enable_acceleration(~0, 0, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 7);
-	ASSERT(!libglitter_enable_acceleration(~0, 1, callback_null, NULL));
+	ASSERT(!libglitter_enable_acceleration(~0, 1, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 8);
 	return 0;
 }

@@ -1,0 +1,67 @@
+.TH LIBGLITTER_SPLIT_*_RASTER 3 LIBGLITTER
+.SH NAME
+libglitter_split_*_raster - Split an integer raster into mutliple rasters with narrower integers
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+void libglitter_split_uint64_raster(uint16_t *\fIrasters\fP[3], uint16_t **\fIalphap\fP, uint64_t *\fIraster\fP,
+                                    uint64_t \fIred\fP, uint64_t \fIgreen\fP, uint64_t \fIblue\fP);
+
+void libglitter_split_uint32_raster(uint8_t *\fIrasters\fP[3], uint8_t **\fIalphap\fP, uint32_t *\fIraster\fP,
+                                    uint32_t \fIred\fP, uint32_t \fIgreen\fP, uint32_t \fIblue\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter" .
+.SH DESCRIPTION
+The
+.BR libglitter_split_uint64_raster ()
+and
+.BR libglitter_split_uint32_raster ()
+functions split the colour raster input in to the
+.I raster
+parameter into four intensity rasters, and output
+the raster for the red channel to
+.IR rasters[0] ,
+the raster for the green channel to
+.IR rasters[1] ,
+and the raster for the blue channel to
+.IR rasters[2] ,
+and unless
+.I alphap
+is null, it also outputs the alpha raster to
+.IR *alphap .
+.PP
+For the
+.BR libglitter_split_uint64_raster ()
+function,
+.I red
+shall be the value
+.I 0xFFFF
+shifted to make out a colour that is pure
+primary red,
+.I green
+shall be the value
+.I 0xFFFF
+shifted to make out a colour that is pure
+primary green, and
+.I blue
+shall be the value
+.I 0xFFFF
+shifted to make out a colour that is pure
+primary blue.
+For the
+.BR libglitter_split_uint32_raster ()
+function, the value
+.I 0xFF
+is used rather than
+.IR 0xFFFF .
+.SH RETURN VALUES
+None.
+.SH ERRORS
+None.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_reorder_rasters (3)

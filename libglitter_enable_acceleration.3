@@ -1,0 +1,113 @@
+.TH LIBGLITTER_ENABLE_ACCELERATION 3 LIBGLITTER
+.SH NAME
+libglitter_enable_acceleration - Enable hardware acceleration
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+int libglitter_enable_acceleration(uint64_t \fIfeatures\fP, int \fIasync\fP,
+                                   void (*\fIcallback\fP)(int, int, void *),
+                                   void *\fIuserdata\fP, void *\fIunused\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter" .
+.SH DESCRIPTION
+The
+.BR libglitter_enable_acceleration ()
+function is planned to in the future enable hardware
+acceleration. Because it can be expansive to enable hardware
+acceleration (such as compiling code for the acceleration
+hardware (normally a graphics card)), and depending on the
+use case, it could also be too expensive to issue commands
+to the acceleration hardware, (1) hardware acceleration
+is not enabled by default, and (2) it can be enabled
+asynchronous, meaning that the applications can use the
+CPU implementations of the libraries functions at the
+beginning of its runtime and enable hardware acceleration
+in the background, and once it has been enabled, the
+library will shift over to using the hardware acceleration.
+.PP
+The
+.I features
+parameter is used to specify which functions to enable
+hardware acceleration for. Recognised values are documented
+separately, in the documentation for the affected functions.
+Any unsupported bit, or combination, is silently ignored.
+.PP
+To enable hardware acceleration asynchronously, specify a
+non-zero value as the
+.I async
+argument. To enable hardware acceleration synchronously
+(meaning that the function does not return until either
+hardware acceleration has been enabled or failed to be
+enabled), specify zero as the
+.I async
+argument.
+.PP
+Unless
+.I callback
+is
+.IR NULL ,
+the function will call
+.I *callback
+immedately before it or the thread it spawns terminates.
+The first argument will be set to the value the function
+would return if
+.I async
+was 0, and the second argument will be set to the value
+the function will set
+.I errno
+to if
+.I async
+was 0 (note that the function call still set
+.I errno
+if it returns a negative value even if
+.I async
+is not 0). The third argument will be
+.IR userdata .
+.PP
+The
+.I userdata
+argument not used except for being passed into
+.IR *callback .
+.PP
+The
+.I unused
+parameter is reserved for future use,
+.I NULL
+must be specified at the moment.
+.SH RETURN VALUES
+The
+.BR libglitter_enable_acceleration ()
+function returns the value 1 if it completes successfully
+with hardware acceleration enabled, the value 0 if it
+completes successfully without hardware acceleration enabled
+(this is what will usually happen if
+.I async
+is set to a non-zero value, but another value may still be
+provided as the first argument to
+.IR *callback ),
+and a negative value on failure. The value -1 is reserved
+for when the function sets
+.I errno
+to specify the error. Other negative values may be used
+in the future to specify errors that do not have a good
+.I errno
+value.
+.SH ERRORS
+Currently none.
+.SH FUTURE DIRECTIONS
+The
+.BR libglitter_enable_acceleration ()
+function, once properly implemented, will require additional
+linking flags, including (probably)
+.I -pthread
+(for asynchronous operation) and linking to libraries needed
+to use hardware acceleration.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_colour_model_convert_rasters_double (3),
+.BR libglitter_compose_double (3),
+.BR libglitter_desaturate_double (3)

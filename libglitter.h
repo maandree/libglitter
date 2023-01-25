@@ -9,32 +9,32 @@
 /**
  * The application will use `double`-typed rasters
  */
-#define LIBGLITTER_FEATURE_DOUBLE_TYPE  UINT64_C(0x0000000000000001)
+#define LIBGLITTER_FEATURE_DOUBLE_TYPE     UINT64_C(0x0000000000000001)
 
 /**
  * The application will use `float`-typed rasters
  */
-#define LIBGLITTER_FEATURE_FLOAT_TYPE   UINT64_C(0x0000000000000002)
+#define LIBGLITTER_FEATURE_FLOAT_TYPE      UINT64_C(0x0000000000000002)
 
 /**
  * The application will use `uint64_t`-typed rasters
  */
-#define LIBGLITTER_FEATURE_UINT64_TYPE  UINT64_C(0x0000000000000004)
+#define LIBGLITTER_FEATURE_UINT64_TYPE     UINT64_C(0x0000000000000004)
 
 /**
  * The application will use `uint32_t`-typed rasters
  */
-#define LIBGLITTER_FEATURE_UINT32_TYPE  UINT64_C(0x0000000000000008)
+#define LIBGLITTER_FEATURE_UINT32_TYPE     UINT64_C(0x0000000000000008)
 
 /**
  * The application will use `uint16_t`-typed rasters
  */
-#define LIBGLITTER_FEATURE_UINT16_TYPE  UINT64_C(0x0000000000000010)
+#define LIBGLITTER_FEATURE_UINT16_TYPE     UINT64_C(0x0000000000000010)
 
 /**
  * The application will use `uint8_t`-typed rasters
  */
-#define LIBGLITTER_FEATURE_UINT8_TYPE   UINT64_C(0x0000000000000020)
+#define LIBGLITTER_FEATURE_UINT8_TYPE      UINT64_C(0x0000000000000020)
 
 /**
  * The allocation will use at least one of the functions
@@ -45,21 +45,28 @@
  * `libglitter_compose_uint16`, and
  * `libglitter_compose_uint8`
  */
-#define LIBGLITTER_FEATURE_COMPOSE      UINT64_C(0x0000000000000040)
+#define LIBGLITTER_FEATURE_COMPOSE         UINT64_C(0x0000000000000040)
 
 /**
  * The allocation will use at least one of the functions
  * `libglitter_desaturate_double`, and
  * `libglitter_desaturate_float`
  */
-#define LIBGLITTER_FEATURE_DESATURATION UINT64_C(0x0000000000000080)
+#define LIBGLITTER_FEATURE_CU_DESATURATION UINT64_C(0x0000000000000080) /* CU = channel-uniform */
 
 /**
  * The allocation will use at least one of the functions
- * `libglitter_colour_space_convert_rasters_double`, and
- * `libglitter_colour_space_convert_rasters_float`
+ * `libglitter_per_channel_desaturate_double`, and
+ * `libglitter_per_channel_desaturate_float`
  */
-#define LIBGLITTER_FEATURE_COLOUR_SPACE UINT64_C(0x0000000000000100)
+#define LIBGLITTER_FEATURE_PC_DESATURATION UINT64_C(0x0000000000000100) /* PC = per channel */
+
+/**
+ * The allocation will use at least one of the functions
+ * `libglitter_colour_model_convert_rasters_double`, and
+ * `libglitter_colour_model_convert_rasters_float`
+ */
+#define LIBGLITTER_FEATURE_COLOUR_MODEL    UINT64_C(0x0000000000000200)
 
 
 /**
@@ -116,8 +123,9 @@ enum libglitter_colour {
  *                    - LIBGLITTER_FEATURE_UINT16_TYPE,
  *                    - LIBGLITTER_FEATURE_UINT8_TYPE,
  *                    - LIBGLITTER_FEATURE_COMPOSE,
- *                    - LIBGLITTER_FEATURE_DESATURATION, and
- *                    - LIBGLITTER_FEATURE_COLOUR_SPACE.
+ *                    - LIBGLITTER_FEATURE_CU_DESATURATION,
+ *                    - LIBGLITTER_FEATURE_PC_DESATURATION, and
+ *                    - LIBGLITTER_FEATURE_COLOUR_MODEL.
  * @param   async     Whether the function shall return immediately
  *                    rather than when complete
  * @param   callback  Callback function that is called at function
@@ -130,11 +138,12 @@ enum libglitter_colour {
  *                    also be `NULL` if no callback function shall be
  *                    called
  * @param   userdata  User-specific data to pass into `callback`, may be `NULL`
+ * @param   unused    Reserved for future use, shall be `NULL`
  * @return            1 on success with hardware acceleration enabled,
  *                    0 on success without hardware acceleration enabled,
  *                    or -1 on failure
  */
-int libglitter_enable_acceleration(uint64_t, int, void (*)(int, int, void *), void *);
+int libglitter_enable_acceleration(uint64_t, int, void (*)(int, int, void *), void *, void *);
 
 
 /**
@@ -161,7 +170,8 @@ int libglitter_enable_acceleration(uint64_t, int, void (*)(int, int, void *), vo
  * 
  * If `noutputs` is 3 and either `widthmul` or `heightmul` is 3 and
  * the other one is 1, `ncellvalues` will not be used as it is preknown
- * that all its values are 1
+ * that all its values are 1; in the future this could also happen for
+ * other situations where `noutputs == widthmul * heightmul`
  */
 LIBGLITTER_RENDER_CONTEXT *libglitter_create_render_context(size_t, size_t, size_t, size_t,
                                                             const uint8_t *, const uint8_t *);
@@ -400,13 +410,13 @@ void libglitter_per_channel_desaturate_float(float **, size_t, size_t, size_t, s
 
 /**
  * Get the matrix each pixel shall be multiplied with
- * to convert it from the output's colour space to sRGB
+ * to convert it from the output's colour model to sRGB
  * or CIE XYZ
  * 
  * This is useful when the output does not use sRGB, or
  * CIE XYZ, but the application does. If the application
- * uses some other colour space, this function can output
- * the conversion matrix for the CIE XYZ colour space,
+ * uses some other colour model, this function can output
+ * the conversion matrix for the CIE XYZ colour model,
  * which can that be right-hand multiplied to get the
  * conversion matrix for some other colour; but be aware
  * that the output matrix is in column-major order, not
@@ -423,25 +433,30 @@ void libglitter_per_channel_desaturate_float(float **, size_t, size_t, size_t, s
  * @param  white_y  The CIE y value (as in CIE xyY) of the output's white point
  * @param  white_Y  The CIE Y value (as in CIE xyY) of the output's white point, normally 1
  * @param  xyz      Whether the output conversion matrix should be to CIE XYZ rather the sRGB
+ * @param  c1Yp     Output parameter for the first primary colour CIE Y value, or `NULL`
+ * @param  c2Yp     Output parameter for the second primary colour CIE Y value, or `NULL`
+ * @param  c3Yp     Output parameter for the third primary colour CIE Y value, or `NULL`
  * 
  * `LIBGLITTER_ILLUMINANT_D65` can be input in place of
  * `white_x, white_y, white_Y` (it expands to three arguments)
  * if the output's whitepoint is the D65 illuminant
  */
-void libglitter_get_colour_space_conversion_matrix_double(double[3][3], double, double, double, double,
-                                                          double, double, double, double, double, int);
+void libglitter_get_colour_model_conversion_matrix_double(double[3][3], double, double, double, double,
+                                                          double, double, double, double, double, int,
+                                                          double *, double *, double *);
 
 /**
- * This value is identical to `libglitter_get_colour_space_conversion_matrix_double`,
- * apart from it parameter types, see `libglitter_get_colour_space_conversion_matrix_double`
+ * This value is identical to `libglitter_get_colour_model_conversion_matrix_double`,
+ * apart from it parameter types, see `libglitter_get_colour_model_conversion_matrix_double`
  * for details about this function
  */
-void libglitter_get_colour_space_conversion_matrix_float(float[3][3], float, float, float, float,
-                                                         float, float, float, float, float, int);
+void libglitter_get_colour_model_conversion_matrix_float(float[3][3], float, float, float, float,
+                                                         float, float, float, float, float, int,
+                                                         float *, float *, float *);
 
 
 /**
- * Convert set of rasters from one colour space to another
+ * Convert set of rasters from one colour model to another
  * 
  * @param  n                The number of input rasters
  * @param  m                The number of output rasters
@@ -467,18 +482,19 @@ void libglitter_get_colour_space_conversion_matrix_float(float[3][3], float, flo
  *                          values per cell)
  * @param  width            The horizontal number of pixels in the rasters
  * @param  height           The vertical number of pixels in the rasters
- * @param  matrix           Colour space conversion matrix, in column-major order
+ * @param  matrix           Colour model conversion matrix, in column-major order
  */
-void libglitter_colour_space_convert_rasters_double(size_t n, size_t m, double **, const double **, size_t,
-                                                    size_t, size_t, size_t, size_t, size_t, const double[n][m]);
+void libglitter_colour_model_convert_rasters_double(size_t n, size_t m, double **, const double **, size_t,
+                                                    size_t, size_t, size_t, size_t, size_t, const double[m][n]);
 
 /**
- * This value is identical to `libglitter_colour_space_convert_rasters_double`,
- * apart from it parameter types, see `libglitter_colour_space_convert_rasters_double`
+ * This value is identical to `libglitter_colour_model_convert_rasters_double`,
+ * apart from it parameter types, see `libglitter_colour_model_convert_rasters_double`
  * for details about this function
  */
-void libglitter_colour_space_convert_rasters_float(size_t n, size_t m, float **, const float **, size_t,
-                                                   size_t, size_t, size_t, size_t, size_t, const float[n][m]);
+void libglitter_colour_model_convert_rasters_float(size_t n, size_t m, float **, const float **, size_t,
+                                                   size_t, size_t, size_t, size_t, size_t, const float[m][n]);
 
 
 #endif
+/* TODO add `restrict` where appropriate */

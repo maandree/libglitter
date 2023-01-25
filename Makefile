@@ -17,8 +17,8 @@ LIB_NAME = glitter
 
 
 OBJ =\
-	libglitter_colour_space_convert_rasters_double.o\
-	libglitter_colour_space_convert_rasters_float.o\
+	libglitter_colour_model_convert_rasters_double.o\
+	libglitter_colour_model_convert_rasters_float.o\
 	libglitter_compose_double.o\
 	libglitter_compose_float.o\
 	libglitter_compose_uint16.o\
@@ -30,8 +30,8 @@ OBJ =\
 	libglitter_desaturate_float.o\
 	libglitter_create_render_context.o\
 	libglitter_free_render_context.o\
-	libglitter_get_colour_space_conversion_matrix_double.o\
-	libglitter_get_colour_space_conversion_matrix_float.o\
+	libglitter_get_colour_model_conversion_matrix_double.o\
+	libglitter_get_colour_model_conversion_matrix_float.o\
 	libglitter_per_channel_desaturate_double.o\
 	libglitter_per_channel_desaturate_float.o\
 	libglitter_reorder_rasters.o\
@@ -42,6 +42,9 @@ OBJ =\
 HDR =\
 	common.h\
 	libglitter.h
+
+MAN3 = $(OBJ:.o=.3)
+MAN7 = libglitter.7
 
 LOBJ = $(OBJ:.o=.lo)
 TESTS = $(OBJ:.o=.test)
@@ -89,6 +92,10 @@ install: libglitter.a libglitter.$(LIBEXT)
 	ln -sf -- libglitter.$(LIBMINOREXT) "$(DESTDIR)$(PREFIX)/lib/libglitter.$(LIBMAJOREXT)"
 	ln -sf -- libglitter.$(LIBMAJOREXT) "$(DESTDIR)$(PREFIX)/lib/libglitter.$(LIBEXT)"
 	cp -- libglitter.h "$(DESTDIR)$(PREFIX)/include/"
+	mkdir -- "$(DESTDIR)$(MANPREFIX)/man3"
+	mkdir -- "$(DESTDIR)$(MANPREFIX)/man7"
+	cp -P -- $(MAN3) "$(DESTDIR)$(MANPREFIX)/man3/"
+	cp -P -- $(MAN7) "$(DESTDIR)$(MANPREFIX)/man7/"
 
 uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libglitter.a"
@@ -96,6 +103,8 @@ uninstall:
 	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libglitter.$(LIBMINOREXT)"
 	-rm -f -- "$(DESTDIR)$(PREFIX)/lib/libglitter.$(LIBEXT)"
 	-rm -f -- "$(DESTDIR)$(PREFIX)/include/libglitter.h"
+	-cd -- "$(DESTDIR)$(MANPREFIX)/man3" && rm -f -- $(MAN3)
+	-cd -- "$(DESTDIR)$(MANPREFIX)/man7" && rm -f -- $(MAN7)
 
 clean:
 	-rm -f -- *.o *.a *.lo *.su *.so *.so.* *.dll *.dylib *.test

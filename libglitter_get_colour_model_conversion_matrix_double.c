@@ -29,7 +29,7 @@ static const double srgb[3][3] = {
 
 
 static void
-invert(double m[3][4]) /* row-major order */
+eliminate(double m[3][4]) /* row-major order */
 {
 	double t;
 	size_t i;
@@ -49,16 +49,17 @@ invert(double m[3][4]) /* row-major order */
 
 
 void
-libglitter_get_colour_space_conversion_matrix_double(double matrix[3][3], double c1x, double c1y,
+libglitter_get_colour_model_conversion_matrix_double(double matrix[3][3], double c1x, double c1y,
                                                      double c2x, double c2y, double c3x, double c3y,
-                                                     double white_x, double white_y, double white_Y, int xyz)
+                                                     double white_x, double white_y, double white_Y,
+                                                     int xyz, double *c1Yp, double *c2Yp, double *c3Yp)
 {
 	double mat[3][4];
 	double x1, x2, x3;
 	double y1, y2, y3;
 	double z1, z2, z3;
 
-	/* Get colour space in CIE XYZ (the matrix is in row-major order) */
+	/* Get colour model in CIE XYZ (the matrix is in row-major order) */
 	mat[0][0] = x1 = X(c1x, c1y);
 	mat[0][1] = x2 = X(c2x, c2y);
 	mat[0][2] = x3 = X(c3x, c3y);
@@ -71,10 +72,16 @@ libglitter_get_colour_space_conversion_matrix_double(double matrix[3][3], double
 	mat[2][1] = z2 = Z(c2x, c2y);
 	mat[2][2] = z3 = Z(c3x, c3y);
 	mat[2][3] = Z(white_x, white_y) * white_Y;
-	invert(mat);
+	eliminate(mat);
 	y1 = mat[0][3];
 	y2 = mat[1][3];
 	y3 = mat[2][3];
+	if (c1Yp)
+		*c1Yp = y1;
+	if (c2Yp)
+		*c2Yp = y2;
+	if (c3Yp)
+		*c3Yp = y3;
 
 	/* [x1, x2, x3; y1, y2, y3; z1, z2, z3] is
 	 * the output RGB-to-CIE XYZ conversion matrix.

@@ -1,0 +1,150 @@
+.TH LIBGLITTER_COLOUR_MODEL_CONVERT_RASTERS_* 3 LIBGLITTER
+.SH NAME
+LIBGLITTER_COLOUR_MODEL_CONVERT_RASTERS_* - Change colour model used for a set of corasters
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+void libglitter_colour_model_convert_rasters_double(size_t \fIn\fP, size_t \fIm\fP, double *\fIoutputs\fP[m],
+                                                    const double *\fIinputs\fP[n], size_t \fIoutput_rowsize\fP,
+                                                    size_t \fIoutput_cellsize\fP, size_t \fIinput_rowsize\fP,
+                                                    size_t \fIinput_cellsize\fP, size_t \fIwidth\fP,
+                                                    size_t \fIheight\fP, const double \fImatrix\fP[m][n]);
+
+void libglitter_colour_model_convert_rasters_float(size_t \fIn\fP, size_t \fIm\fP, float *\fIoutputs\fP[m],
+                                                   const float *\fIinputs\fP[n], size_t \fIoutput_rowsize\fP,
+                                                   size_t \fIoutput_cellsize\fP, size_t \fIinput_rowsize\fP,
+                                                   size_t \fIinput_cellsize\fP, size_t \fIwidth\fP,
+                                                   size_t \fIheight\fP, const float \fImatrix\fP[m][n]);
+.fi
+.PP
+Link with
+.IR "-lglitter -lm" .
+.SH DESCRIPTION
+The
+.BR libglitter_colour_model_convert_rasters_double ()
+and
+.BR libglitter_colour_model_convert_rasters_float ()
+functions convert a set of rasters (one per source
+colour channel) into another set of rasters (one per
+target colour channel) using a different colour model.
+This is useful for application that cannot output
+directly in the output's colour model.
+.PP
+.I n
+shall be the number of source colour channels
+(input rasters), and
+.I m
+shall be the number of target colour channels
+(output rasters).
+.PP
+.I outputs
+shall be the list of output rasters: it is to its elements
+that the function will write. Note that the rasters shall
+already be allocated. Additionally, the function may offset
+the input pointers in this list during execution. Therefore,
+the contents of this list shall be considered undefined
+immediately when the function is called, and may not be
+modified before the function terminates. The application
+must therefore have the pointers to these rasters saved
+elsewhere. The order the rasters shall have in the list
+.I outputs
+is determined how the colour model conversion matrix
+.RI ( matrix )
+was constructed: if it was created using the
+.BR libglitter_colour_model_convert_rasters_double (3),
+function, or the
+.BR libglitter_colour_model_convert_rasters_float (3),
+function, the order shall be (0) red, (1) green, (2) blue
+or (0) X, (1) Y, (2) Z.
+.PP
+.I inputs
+shall be the list of input rasters: it is from its elements
+that the function will read. The function may offset the
+input pointers in this list during execution. Therefore,
+the contents of this list shall be considered undefined
+immediately when the function is called, and may not be
+modified before the function terminates. The application
+must therefore have the pointers to these rasters saved
+elsewhere. The order the rasters shall have in the list
+.I inputs
+is determined how the colour model conversion matrix
+.RI ( matrix )
+was constructed: if it was created using the
+.BR libglitter_colour_model_convert_rasters_double (3),
+function, or the
+.BR libglitter_colour_model_convert_rasters_float (3),
+function, the order shall the order the output's primary
+colours' chromas hade in the function's argument list.
+.PP
+.I output_cellsize
+shall be the number of elements in an output raster the
+pointer to the raster must be offset with to get to a
+pointer to the next cell in the raster.
+.PP
+.I output_rowsize
+shall be the number of cells (not elements; but rather the
+number of elements divided by
+.IR output_cellsize )
+in an output raster the pointer to the raster must be
+offset with to get a pointer to the next row but the
+same column in the raster
+.PP
+.I input_cellsize
+shall be the number of elements in an input raster the
+pointer to the raster must be offset with to get to a
+pointer to the next cell in the raster.
+.PP
+.I input_rowsize
+shall be the number of cells (not elements; but rather the
+number of elements divided by
+.IR input_cellsize )
+in an input raster the pointer to the raster must be
+offset with to get a pointer to the next row but the
+same column in the raster
+.PP
+.I width
+and
+.I height
+shall describe the affected area in the rasters.
+.I width
+shall be the number of pixels the rasters have
+horizontally, and 
+.I height
+shall be the number of pixels the rasters have
+vertically.
+.PP
+.I matrix
+shall be column-major conversion matrix from the source
+colour model (the output's colour model) to the target
+colour model (the application's colour model).
+.PP
+All rasters are in row-major order and must be distinct.
+.PP
+By default, these functions do not use hardware acceleration,
+they run on the CPU. However the
+.BR libglitter_enable_acceleration (3)
+may be able to enable hardware acceleration for these
+functions. It will require at least the following bits in
+its first argument to enable hardware acceleration:
+.RS
+.TP
+.I LIBGLITTER_FEATURE_COLOUR_MODEL | LIBGLITTER_FEATURE_DOUBLE_TYPE
+for
+.BR libglitter_colour_model_convert_rasters_double ()
+or
+.TP
+.I LIBGLITTER_FEATURE_COLOUR_MODEL | LIBGLITTER_FEATURE_FLOAT_TYPE
+for
+.BR libglitter_colour_model_convert_rasters_float ().
+.RE
+.SH RETURN VALUES
+None.
+.SH ERRORS
+None.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_colour_model_convert_rasters_double (3),
+.BR libglitter_compose_double (3),
+.BR libglitter_desaturate_double (3)

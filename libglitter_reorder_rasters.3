@@ -1,0 +1,76 @@
+.TH LIBGLITTER_REORDER_RASTERS 3 LIBGLITTER
+.SH NAME
+libglitter_reorder_rasters - Reorder rasters from the application's order to the physical order
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+void libglitter_reorder_rasters(void **\fIrasters\fP,
+                                enum libglitter_colour \fIcolour1\fP,
+                                enum libglitter_colour \fIcolour2\fP,
+                                enum libglitter_colour \fIcolour3\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter" .
+.SH DESCRIPTION
+The
+.BR libglitter_reorder_rasters (),
+function reorders a set of three rasters to the
+order desired by the
+.BR libglitter_compose_double (3)
+function and similar functions.
+.PP
+The
+.I rasters
+argument shall be a list of three rasters, in
+the order (0) red, (1) green, (2) blue. During
+the execution of the function, the function
+will reorder the elements in this list. So that
+it matches the order expected by the
+.BR libglitter_compose_double (3)
+function and similar functions, which is
+determined the mean in the values in the
+.I cellmap
+argument input to the
+.BR libglitter_create_render_context (3)
+function. These meaning of these values is
+specified via the
+.IR colour1 ,
+.IR colour2 ,
+and
+.I colour3
+parameters. The
+.IR colour1
+argument shall specify colour of subpixel
+whose index is 0
+.IR cellmap ,
+likewise the
+.IR colour2
+argument shall specify colour of subpixel
+whose index is 1
+.IR cellmap ,
+and the
+.IR colour3
+argument shall specify colour of subpixel
+whose index is 2.
+.PP
+Exactly one of
+.IR colour1 ,
+.IR colour2 ,
+and
+.I colour3
+shall be
+.IR LIBGLITTER_CHANNEL_RED ,
+exactly one shall be
+.IR LIBGLITTER_CHANNEL_GREEN ,
+and exactly one shall be
+.IR LIBGLITTER_CHANNEL_BLUE .
+.SH RETURN VALUES
+None.
+.SH ERRORS
+None.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_split_uint64_raster (3)

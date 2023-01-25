@@ -30,7 +30,7 @@ multiply_nn(size_t n, double **outputs, size_t opos, const double **inputs, size
 
 static void
 multiply_nm(size_t n, size_t m, double **outputs /* m */, size_t opos, const double **inputs /* n */,
-            size_t ipos, const double matrix[n][m], double buffer[n])
+            size_t ipos, const double matrix[m][n], double buffer[n])
 {
 	size_t i, j;
 	for (j = 0; j < n; j++)
@@ -44,9 +44,9 @@ multiply_nm(size_t n, size_t m, double **outputs /* m */, size_t opos, const dou
 
 
 void
-libglitter_colour_space_convert_rasters_double(size_t n, size_t m, double **outputs /* m */, const double **inputs /* n */,
+libglitter_colour_model_convert_rasters_double(size_t n, size_t m, double **outputs /* m */, const double **inputs /* n */,
                                                size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
-                                               size_t input_cellsize, size_t width, size_t height, const double matrix[n][m])
+                                               size_t input_cellsize, size_t width, size_t height, const double matrix[m][n])
 {
 	size_t y, x, output_i, input_i, output_blanking, input_blanking;
 	double *buffer;

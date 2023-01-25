@@ -1,0 +1,124 @@
+.TH LIBGLITTER_GET_COLOUR_MODEL_CONVERSION_MATRIX_* 3 LIBGLITTER
+.SH NAME
+libglitter_get_colour_model_conversion_matrix_* - Create a column-major colour model conversion matrix
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+void libglitter_get_colour_model_conversion_matrix_double(double \fImatrix\fP[3][3],
+                                                          double \fIc1x\fP, double \fIc1y\fP,
+                                                          double \fIc2x\fP, double \fIc2y\fP,
+                                                          double \fIc3x\fP, double \fIc3y\fP,
+                                                          double \fIwhite_x\fP, double \fIwhite_y\fP,
+                                                          double \fIwhite_Y\fP, int \fIxyz\fP,
+                                                          double *\fIc1Yp\fP, double *\fIc2Yp\fP,
+                                                          double *\fIc3Yp\fP);
+
+void libglitter_get_colour_model_conversion_matrix_float(float \fImatrix\fP[3][3],
+                                                         float \fIc1x\fP, float \fIc1y\fP,
+                                                         float \fIc2x\fP, float \fIc2y\fP,
+                                                         float \fIc3x\fP, float \fIc3y\fP,
+                                                         float \fIwhite_x\fP, float \fIwhite_y\fP,
+                                                         float \fIwhite_Y\fP, int \fIxyz\fP,
+                                                         float *\fIc1Yp\fP, float *\fIc2Yp\fP,
+                                                         float *\fIc3Yp\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter -lm" .
+.SH DESCRIPTION
+The
+.BR libglitter_get_colour_model_conversion_matrix_double ()
+and
+.BR libglitter_get_colour_model_conversion_matrix_float ()
+functions calculate the CIE XYZ values for an output's
+primary colours from there chromas expressed as CIE xy
+values (CIE xyY sans Y) and the output's whitepoint's
+CIE xyY values. It is assumed that the output uses additive
+colour mixing and that the blackpoint is perfect black.
+After calculating the primary colours' CIE XYZ values,
+the functions either output, to
+.I matrix
+a column-major conversion matrix from the output's colour
+model to CIE XYZ (if
+.I xyz
+is non-zero) or a column-major conversion matrix from the
+output's colour model to [0, 1]-normalised sRGB (otherwise).
+.PP
+The x and y values of the output's first primary colour
+shall be input as the
+.I c1x
+and
+.I c1y
+arguments, the second primary colour's values as
+.I c2x
+and
+.I c2y
+and the third primary colour's values as
+.I c3x
+and
+.IR c3y .
+.PP
+.IR white_x ,
+.IR white_y ,
+and
+.IR white_Y
+shall be the output's whitepoint's CIE xyY values
+(x, y, and Y respectively).
+.I white_Y
+is normally 1, and if it is, and if the whitepoint is
+also the D65 illuminant (which it usually is), the macro
+.I LIBGLITTER_ILLUMINANT_D65
+can be used to specify these three arguments (it expands
+into three arguments):
+.RS
+.nf
+
+void libglitter_get_colour_model_conversion_matrix_double(double \fImatrix\fP[3][3],
+                                                          double \fIc1x\fP, double \fIc1y\fP,
+                                                          double \fIc2x\fP, double \fIc2y\fP,
+                                                          double \fIc3x\fP, double \fIc3y\fP,
+                                                          LIBGLITTER_ILLUMINANT_D65,
+                                                          int \fIxyz\fP, double *\fIc1Yp\fP,
+                                                          double *\fIc2Yp\fP, double *\fIc3Yp\fP);
+
+void libglitter_get_colour_model_conversion_matrix_float(float \fImatrix\fP[3][3],
+                                                         float \fIc1x\fP, float \fIc1y\fP,
+                                                         float \fIc2x\fP, float \fIc2y\fP,
+                                                         float \fIc3x\fP, float \fIc3y\fP,
+                                                         LIBGLITTER_ILLUMINANT_D65,
+                                                         int \fIxyz\fP, float *\fIc1Yp\fP,
+                                                         float *\fIc2Yp\fP, float *\fIc3Yp\fP);
+.fi
+.RE
+.PP
+Unless
+.I c1Yp
+is
+.IR NULL ,
+.I *c1Yp
+is set to the first primary colour's CIE Y value.
+Likewise, unless
+.I c2Yp
+is
+.IR NULL ,
+.I *c2Yp
+is set to the second primary colour's CIE Y value,
+and unless
+.I c3Yp
+is
+.IR NULL ,
+.I *c3Yp
+is set to the third primary colour's CIE Y value,
+.PP
+The output's three primary colours not form a straight
+line: they must render a three dimensional colour space.
+.SH RETURN VALUES
+None.
+.SH ERRORS
+None.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_colour_model_convert_rasters_double (3),
+.BR libglitter_desaturate_double (3)

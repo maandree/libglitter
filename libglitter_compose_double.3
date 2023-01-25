@@ -1,0 +1,150 @@
+.TH LIBGLITTER_COMPOSE_* 3 LIBGLITTER
+.SH NAME
+libglitter_compose_* - Convert a subpixel-resolution raster to multiple pixel-resolution rasters
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+void libglitter_compose_double(double **\fIoutputs\fP, const double *\fIinput\fP,
+                               size_t \fIoutput_rowsize\fP, size_t \fIoutput_cellsize\fP,
+                               size_t \fIwidth\fP, size_t \fIheight\fP,
+                               const LIBGLITTER_RENDER_CONTEXT *\fIrender_ctx\fP);
+
+void libglitter_compose_float(float **\fIoutputs\fP, const float *\fIinput\fP,
+                              size_t \fIoutput_rowsize\fP, size_t \fIoutput_cellsize\fP,
+                              size_t \fIwidth\fP, size_t \fIheight\fP,
+                              const LIBGLITTER_RENDER_CONTEXT *\fIrender_ctx\fP);
+
+void libglitter_compose_uint64(uint64_t **\fIoutputs\fP, const uint64_t *\fIinput\fP,
+                               size_t \fIoutput_rowsize\fP, size_t \fIoutput_cellsize\fP,
+                               size_t \fIwidth\fP, size_t \fIheight\fP,
+                               const LIBGLITTER_RENDER_CONTEXT *\fIrender_ctx\fP);
+
+void libglitter_compose_uint32(uint32_t **\fIoutputs\fP, const uint32_t *\fIinput\fP,
+                               size_t \fIoutput_rowsize\fP, size_t \fIoutput_cellsize\fP,
+                               size_t \fIwidth\fP, size_t \fIheight\fP,
+                               const LIBGLITTER_RENDER_CONTEXT *\fIrender_ctx\fP);
+
+void libglitter_compose_uint16(uint16_t **\fIoutputs\fP, const uint16_t *\fIinput\fP,
+                               size_t \fIoutput_rowsize\fP, size_t \fIoutput_cellsize\fP,
+                               size_t \fIwidth\fP, size_t \fIheight\fP,
+                               const LIBGLITTER_RENDER_CONTEXT *\fIrender_ctx\fP);
+
+void libglitter_compose_uint8(uint8_t **\fIoutputs\fP, const uint8_t *\fIinput\fP,
+                              size_t \fIoutput_rowsize\fP, size_t \fIoutput_cellsize\fP,
+                              size_t \fIwidth\fP, size_t \fIheight\fP,
+                              const LIBGLITTER_RENDER_CONTEXT *\fIrender_ctx\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter" .
+.SH DESCRIPTION
+The
+.BR libglitter_compose_double (),
+.BR libglitter_compose_float (),
+.BR libglitter_compose_uint64 (),
+.BR libglitter_compose_uint32 (),
+.BR libglitter_compose_uint16 (),
+and
+.BR libglitter_compose_uint8 (),
+functions convert, based on input used to create the
+.I render_ctx
+argument (the
+.BR libglitter_create_render_context (3)
+function is used to create
+.IR render_ctx ),
+a raster (input to the function via the
+.I input
+parameter) with a text rendered with greyscale antialiasing
+on subpixel resolution (rather than pixel resolution) into
+a set of rasters with pixel resolution: one raster per colour
+channel.
+.PP
+.I outputs
+shall be the list of output rasters: it is to its elements
+that the function will write. Note that the rasters shall
+already be allocated. Additionally, the function may offset
+the input pointers in this list during execution. Therefore,
+the contents of this list shall be considered undefined
+immediately when the function is called, and may not be
+modified before the function terminates. The application
+must therefore have the pointers to these rasters saved
+elsewhere. The order the rasters shall have in the list
+.I outputs
+is determined when creating
+.IR render_ctx .
+.PP
+.I output_cellsize
+shall be the number of elements in an output raster the
+pointer to the raster must be offset with to get to a
+pointer to the next cell in the raster.
+.PP
+.I output_rowsize
+shall be the number of cells (not elements; but rather
+the number of elements divided by
+.IR output_cellsize )
+in an output raster the pointer to the raster must be
+offset with to get a pointer to the next row but the
+same column in the raster
+.PP
+.I width
+and
+.I height
+shall describe the affected area in the output rasters.
+.I width
+shall be the number of pixels the rasters have
+horizontally, and 
+.I height
+shall be the number of pixels the rasters have
+vertically. It shall not be the number of subpixels
+in the input rasters, but rather the number of pixels,
+which is easiest to think of in terms of the size of
+the output rasters (minus any unused area, however
+the pointers must point to the first used pixel).
+.PP
+All rasters are in row-major order.
+.PP
+By default, these functions do not use hardware acceleration,
+they run on the CPU. However the
+.BR libglitter_enable_acceleration (3)
+may be able to enable hardware acceleration for these
+functions. It will require at least the following bits in
+its first argument to enable hardware acceleration:
+.RS
+.TP
+.I LIBGLITTER_FEATURE_COMPOSE | LIBGLITTER_FEATURE_DOUBLE_TYPE
+for
+.BR libglitter_compose_double (),
+.TP
+.I LIBGLITTER_FEATURE_COMPOSE | LIBGLITTER_FEATURE_FLOAT_TYPE
+for
+.BR libglitter_compose_float (),
+.TP
+.I LIBGLITTER_FEATURE_COMPOSE | LIBGLITTER_FEATURE_UINT64_TYPE
+for
+.BR libglitter_compose_uint64 (),
+.TP
+.I LIBGLITTER_FEATURE_COMPOSE | LIBGLITTER_FEATURE_UINT32_TYPE
+for
+.BR libglitter_compose_uint32 (),
+.TP
+.I LIBGLITTER_FEATURE_COMPOSE | LIBGLITTER_FEATURE_UINT16_TYPE
+for
+.BR libglitter_compose_uint16 (),
+or
+.TP
+.I LIBGLITTER_FEATURE_COMPOSE | LIBGLITTER_FEATURE_UINT8_TYPE
+for
+.BR libglitter_compose_uint8 ().
+.RE
+.SH RETURN VALUES
+None.
+.SH ERRORS
+None.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_colour_model_convert_rasters_double (3),
+.BR libglitter_desaturate_double (3),
+.BR libglitter_reorder_rasters (3),
+.BR libglitter_split_uint64_raster (3)

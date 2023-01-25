@@ -39,15 +39,15 @@ DESCRIPTION
 	float(3).
 
 	Then, if the application cannot output directly to the
-	output's colour space, the application can use
-	libglitter_get_colour_space_conversion_matrix_double(3)
-	and libglitter_colour_space_convert_rasters_double(3) or
-	libglitter_get_colour_space_conversion_matrix_float(3)
-	and libglitter_colour_space_convert_rasters_float(3) to
-	convert a colour space the application can output in. It is
+	output's colour model, the application can use
+	libglitter_get_colour_model_conversion_matrix_double(3)
+	and libglitter_colour_model_convert_rasters_double(3) or
+	libglitter_get_colour_model_conversion_matrix_float(3)
+	and libglitter_colour_model_convert_rasters_float(3) to
+	convert a colour model the application can output in. It is
 	however out of the scope of libglitter to get the output's
-	colour space and the conversion matrix to any other colour
-	space than sRGB or CIE XYZ.
+	colour model and the conversion matrix to any other colour
+	model than sRGB or CIE XYZ.
 
 	The finally step of the rendering process is out of scope for
 	libglitter, but is to ensure that all floating-point values
