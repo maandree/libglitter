@@ -90,7 +90,7 @@ libglitter.$(LIBEXT): $(LOBJ)
 	$(CC) $(LIBFLAGS) -o $@ $(LOBJ) $(LDFLAGS)
 
 check: $(TESTS)
-	@for t in $(TESTS); do printf './%s\n' $$t; ./$$t || exit 1; done
+	@for t in $(TESTS); do printf './%s\n' $$t; $(CHECK_PREFIX) ./$$t || exit 1; done
 
 install: libglitter.a libglitter.$(LIBEXT)
 	mkdir -p -- "$(DESTDIR)$(PREFIX)/lib"

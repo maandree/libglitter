@@ -35,7 +35,7 @@ libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *this, size_t rowsize
 int
 main(void)
 {
-	return 0; /* TODO add test */
+	return 0; /* tested via libglitter_create_render_context */
 }
 
 
