@@ -37,11 +37,9 @@ libglitter_get_colour_model_conversion_matrix_float(float matrix[3][3], float c1
 #else
 
 
-int
-main(void)
-{
-	return 0; /* TODO add test */
-}
+#define libglitter_get_colour_model_conversion_matrix_double libglitter_get_colour_model_conversion_matrix_float
+#define double float
+#include "libglitter_get_colour_model_conversion_matrix_double.c"
 
 
 #endif
