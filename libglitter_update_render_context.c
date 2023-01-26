@@ -10,21 +10,23 @@ libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *this, size_t rowsize
 	uint8_t channel;
 	size_t cellsi[3] = {0, 0, 0};
 
-	if (this && this->render_method == RENDER_METHOD_SIMPLE && this->rowsize != rowsize) {
+	if (this && this->rowsize != rowsize) {
 		this->rowsize = rowsize;
-		for (y = 0; y < this->heightmul; y++) {
-			for (x = 0; x < this->widthmul; x++) {
-				channel = this->cellmap[y * this->widthmul + x];
-				this->cells[channel][cellsi[channel]] = y * rowsize + x;
-				cellsi[channel] += 1;
+		if (this->render_method == RENDER_METHOD_SIMPLE) {
+			for (y = 0; y < this->heightmul; y++) {
+				for (x = 0; x < this->widthmul; x++) {
+					channel = this->cellmap[y * this->widthmul + x];
+					this->cells[channel][cellsi[channel]] = y * rowsize + x;
+					cellsi[channel] += 1;
+				}
 			}
+			if (cellsi[0] == 1)
+				this->cells[0][1] = this->cells[0][0];
+			if (cellsi[1] == 1)
+				this->cells[1][1] = this->cells[1][0];
+			if (cellsi[2] == 1)
+				this->cells[2][1] = this->cells[2][0];
 		}
-		if (cellsi[0] == 1)
-			this->cells[0][1] = this->cells[0][0];
-		if (cellsi[1] == 1)
-			this->cells[1][1] = this->cells[1][0];
-		if (cellsi[2] == 1)
-			this->cells[2][1] = this->cells[2][0];
 	}
 }
 
@@ -35,7 +37,8 @@ libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *this, size_t rowsize
 int
 main(void)
 {
-	return 0; /* tested via libglitter_create_render_context */
+	libglitter_update_render_context(NULL, 100);
+	return 0; /* tested via libglitter_create_render_context, and in libglitter_create_render_context.c */
 }
 
 
