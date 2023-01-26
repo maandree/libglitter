@@ -120,7 +120,10 @@ shall be column-major conversion matrix from the source
 colour model (the output's colour model) to the target
 colour model (the application's colour model).
 .PP
-All rasters are in row-major order and must be distinct.
+All rasters are in row-major order and must be distinct,
+except the input rasters are allowed to the same, with
+the same offsets, as the output rasters: they must overlap
+exactly or not at all.
 .PP
 By default, these functions do not use hardware acceleration,
 they run on the CPU. However the
