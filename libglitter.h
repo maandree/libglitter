@@ -172,6 +172,8 @@ int libglitter_enable_acceleration(uint64_t, int, void (*)(int, int, void *), vo
  * the other one is 1, `ncellvalues` will not be used as it is preknown
  * that all its values are 1; in the future this could also happen for
  * other situations where `noutputs == widthmul * heightmul`
+ * 
+ * The returned object will contain references to `cellmap` and `ncellvalues`
  */
 LIBGLITTER_RENDER_CONTEXT *libglitter_create_render_context(size_t, size_t, size_t, size_t,
                                                             const uint8_t *, const uint8_t *);

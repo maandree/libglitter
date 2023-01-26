@@ -99,6 +99,13 @@ shall be the number of times the value
 appears in
 .IR cellmap .
 .RE
+.PP
+The returned object will contain references to
+.I cellmap
+and
+.IR ncellvalues .
+This means that they must remain in memory and
+unmodified for the lifetime of the returned object.
 .SH RETURN VALUES
 The
 .BR libglitter_create_render_context ()
