@@ -92,8 +92,8 @@ install: libglitter.a libglitter.$(LIBEXT)
 	ln -sf -- libglitter.$(LIBMINOREXT) "$(DESTDIR)$(PREFIX)/lib/libglitter.$(LIBMAJOREXT)"
 	ln -sf -- libglitter.$(LIBMAJOREXT) "$(DESTDIR)$(PREFIX)/lib/libglitter.$(LIBEXT)"
 	cp -- libglitter.h "$(DESTDIR)$(PREFIX)/include/"
-	mkdir -- "$(DESTDIR)$(MANPREFIX)/man3"
-	mkdir -- "$(DESTDIR)$(MANPREFIX)/man7"
+	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man3"
+	mkdir -p -- "$(DESTDIR)$(MANPREFIX)/man7"
 	cp -P -- $(MAN3) "$(DESTDIR)$(MANPREFIX)/man3/"
 	cp -P -- $(MAN7) "$(DESTDIR)$(MANPREFIX)/man7/"
 
