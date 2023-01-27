@@ -2,6 +2,7 @@
 #include "common.h"
 #define ONLY_INT_COMPATIBLE
 #define double uint64_t
+#define libglitter_compose_double libglitter_compose_uint64
 #include "libglitter_compose_double.c"
 #ifdef greater_t
 # define MIX(A, B) (((greater_t)(A) + (greater_t)(B)) >> 1)
@@ -90,16 +91,6 @@ libglitter_compose_uint64(uint64_t **outputs, const uint64_t *restrict input, si
 		        render_ctx->rowsize, width, height, render_ctx->widthmul, render_ctx->heightmul,
 		        render_ctx->cellmap, render_ctx->ncellvalues);
 	}
-}
-
-
-#else
-
-
-int
-main(void)
-{
-	return 0; /* TODO add test */
 }
 
 
