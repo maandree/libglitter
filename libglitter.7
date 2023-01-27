@@ -84,6 +84,73 @@ at the beginning of its execution to enable
 any implemented and supported hardware acceleration. This
 may however be an expensive process, and may not be
 desirable for all applications.
+.SH APPLICATION USAGE
+Some users are more sensitive to colour while other users
+are more sensitive to shape. Subpixel-antialiasing, if done
+well, is a good option for users that are more sensitive
+to shape. However, for users that are more sensative to
+colour, subpixel-antialiasing renders glittering, and reading
+subpixel-antialiased text can be headache inducing, especially
+if implemented poorly or if the monitor doesn't have high
+enough pixel density (for some users just above normal laptop
+pixel density can be fine, but for others, not even 4K on a
+laptop is good enough). For these users, greyscale-antialiasing
+is a much better option. For this reason, applications must
+not for subpixel-antialiasing, and should even only used it
+if the user explicitly requests it.
 .PP
+Hinting is another important issue. For aliased text, hinting
+is critical to ensure that strokes do not disable because they
+are not wide enough, but also it is important so that a stroke's
+width is not doubled because it is a bit wider than a pixel or
+not aligned well with the pixel grid. Hinting attempts to align
+the font outline with the pixel grid. For greyscale-antialiased
+text, hinting as not as important, but it removes blurring and
+dim strokes. For subpixel-antialiased text, hinting is not as
+important as for aliased text, but it is more much important
+that one greyscale-antialiased text. For subpixel-antialiased
+text, hinting removes fringing (colours along the edge of a
+stroke) and miscoloured strokes, strokes can even disappear:
+for example, if the stroke only hits blue subpixels, but
+should be rendered as pure red (the primary colour) on black,
+there will only be black, as that is what primary red muliplied
+by primary blue results in. Applications are discourage for
+using subpixel-rendering on non-hinted text unless that user
+explicitly says it he wants subpixel-rendered text even it will
+look bad (presumably to see how it looks). Subpixel-rendering
+may also be a bad idea on coloured text.
+.PP
+Because subpixel-rendering is entirely dependent on the subpixel
+layout, it is inappropriate to use subpixel-rendering unless the
+subpixel layout is known, and the text is rendered specifically
+for that subpixel layout, or if the resulting raster is scaled
+post-rendering, for example if the output native resultion is
+3840x2400, but the computer outputs 1920x1200, (and the output
+is scaled up by a factor of 2 per dimension). The purpose of
+subpixel-rendering is defeated in such situations.
+.PP
+For best result, the application shall take into consideration
+both the output's vertical pixel density and horizontal pixel
+density, subpixel order, subpixel layout, output scaling, the
+output's colour model's transfer function (gamma compression),
+hinting, and text and background colour. If text is rendered with
+light on dark colours, but the font is not designed for reverse
+type, the application may desire to apply more aggressive hinting.
+The application shall also output the text image in the colour's
+native colour model: as the primary colours' chromacity may
+differ from sRGB, it is possible that when outputing colour it
+is intepreted as sRGB, and converting to the output's colour
+model, which may change the activation level on the subpixels
+as compared to how it was rendered.
+.PP
+Applications should be aware that the user's may use different
+monitors and may therefore need to render text differently
+depending on which output the text is being displayed on. This
+may even include changing the text's pixel size, which can be
+very problematic (depending on the context) if the text is
+split over two output; however the user probably not reading
+the text if it is split over two outputs, so simply basing
+the pixel size of one of the monitors or averaging them is
+probably good enough in that case.
 .SH SEE ALSO
 .BR libfonts (7)
