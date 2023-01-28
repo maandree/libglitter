@@ -12,6 +12,21 @@
 #include <string.h>
 
 
+#if defined(__GNUC__) && !defined(__clang__)
+# pragma GCC diagnostic ignored "-Wunsuffixed-float-constants"
+# pragma GCC diagnostic ignored "-Wunused-macros"
+# pragma GCC diagnostic ignored "-Wpadded"
+#elif defined(__clang__)
+# pragma clang diagnostic ignored "-Wunused-macros"
+# pragma clang diagnostic ignored "-Wkeyword-macro"
+# pragma clang diagnostic ignored "-Walloca"
+# pragma clang diagnostic ignored "-Wdisabled-macro-expansion"
+# pragma clang diagnostic ignored "-Wcomma"
+# pragma clang diagnostic ignored "-Wpadded"
+# pragma clang diagnostic ignored "-Wvla"
+#endif
+
+
 #define RENDER_METHOD_VSTRIPS 0
 #define RENDER_METHOD_HSTRIPS 1
 #define RENDER_METHOD_SIMPLE 2
@@ -33,6 +48,16 @@ struct libglitter_render_context {
 
 
 #ifdef TEST
+
+#if defined(__GNUC__) && !defined(__clang__)
+# pragma GCC diagnostic ignored "-Wfloat-equal"
+# pragma GCC diagnostic ignored "-Wfloat-conversion"
+# pragma GCC diagnostic ignored "-Wdouble-promotion"
+#elif defined(__clang__)
+# pragma clang diagnostic ignored "-Wfloat-equal"
+# pragma clang diagnostic ignored "-Wdouble-promotion"
+# pragma clang diagnostic ignored "-Wimplicit-float-conversion"
+#endif
 
 # define ASSERT(ASSERTION)\
 	do {\

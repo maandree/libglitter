@@ -4,10 +4,10 @@
 
 
 static void
-vstrips(double **outputs_, const double *restrict input, size_t output_rowsize, size_t output_cellsize,
+vstrips(double *restrict *outputs_, const double *restrict input, size_t output_rowsize, size_t output_cellsize,
         size_t input_rowsize, size_t width, size_t height, const uint8_t *restrict cellmap)
 {
-	double *outputs[3];
+	double *restrict outputs[3];
 	size_t y, x, output_y, output_i, input_blanking;
 
 	outputs[0] = outputs_[cellmap[0]];
@@ -31,10 +31,10 @@ vstrips(double **outputs_, const double *restrict input, size_t output_rowsize, 
 
 
 static void
-hstrips(double **outputs_, const double *restrict input, size_t output_rowsize, size_t output_cellsize,
+hstrips(double *restrict *outputs_, const double *restrict input, size_t output_rowsize, size_t output_cellsize,
         size_t input_rowsize, size_t width, size_t height, const uint8_t *restrict cellmap)
 {
-	double *outputs[3];
+	double *restrict outputs[3];
 	size_t y, x, output_y, output_i, input_blanking;
 
 	outputs[0] = outputs_[cellmap[0]];
@@ -61,7 +61,7 @@ hstrips(double **outputs_, const double *restrict input, size_t output_rowsize, 
 
 
 static void
-generic(double **outputs, size_t noutputs, const double *restrict input,
+generic(double *restrict *outputs, size_t noutputs, const double *restrict input,
         size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
         size_t width, size_t height, size_t widthmul, size_t heightmul,
         const uint8_t *restrict cellmap, const double *restrict cellweights)
@@ -96,8 +96,8 @@ generic(double **outputs, size_t noutputs, const double *restrict input,
 
 
 void
-libglitter_compose_double(double **outputs, const double *restrict input, size_t output_rowsize, size_t output_cellsize,
-                          size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *render_ctx)
+libglitter_compose_double(double *restrict *outputs, const double *restrict input, size_t output_rowsize, size_t output_cellsize,
+                          size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *restrict render_ctx)
 {
 	if (render_ctx->render_method == RENDER_METHOD_VSTRIPS) {
 		vstrips(outputs, input, output_rowsize, output_cellsize, render_ctx->rowsize, width, height, render_ctx->cellmap);

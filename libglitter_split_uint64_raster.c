@@ -38,15 +38,15 @@ libglitter_split_uint64_raster(uint16_t *rasters[3], uint16_t **alphap, uint64_t
 static void
 check(int with_alpha, int r, int g, int b, int a)
 {
-	int red_shift    = r * sizeof(uint16_t) * 8;
-	int green_shift  = g * sizeof(uint16_t) * 8;
-	int blue_shift   = b * sizeof(uint16_t) * 8;
-	int alpha_shift  = a * sizeof(uint16_t) * 8;
-	uint16_t full  = ~(uint16_t)0;
-	uint16_t red   = (uint16_t)~0 / (uint16_t)0xF * (uint16_t)0x5;
-	uint16_t green = (uint16_t)~0 / (uint16_t)0xF * (uint16_t)0x8;
-	uint16_t blue  = (uint16_t)~0 / (uint16_t)0xF * (uint16_t)0xA;
-	uint16_t alpha = (uint16_t)~0 / (uint16_t)0xF * (uint16_t)0x9;
+	int red_shift    = r * (int)sizeof(uint16_t) * 8;
+	int green_shift  = g * (int)sizeof(uint16_t) * 8;
+	int blue_shift   = b * (int)sizeof(uint16_t) * 8;
+	int alpha_shift  = a * (int)sizeof(uint16_t) * 8;
+	uint16_t full  = (uint16_t)~0U;
+	uint16_t red   = (uint16_t)~0U / (uint16_t)0xF * (uint16_t)0x5;
+	uint16_t green = (uint16_t)~0U / (uint16_t)0xF * (uint16_t)0x8;
+	uint16_t blue  = (uint16_t)~0U / (uint16_t)0xF * (uint16_t)0xA;
+	uint16_t alpha = (uint16_t)~0U / (uint16_t)0xF * (uint16_t)0x9;
 	uint64_t red_mask   = (uint64_t)red   << red_shift;
 	uint64_t green_mask = (uint64_t)green << green_shift;
 	uint64_t blue_mask  = (uint64_t)blue  << blue_shift;

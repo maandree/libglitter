@@ -4,7 +4,8 @@
 
 
 static void
-multiply_33(double **outputs, size_t opos, const double **inputs, size_t ipos, const double matrix[3][3])
+multiply_33(double *restrict *restrict outputs, size_t opos,
+            const double *restrict *restrict inputs, size_t ipos, const double matrix[3][3])
 {
 	double i0 = inputs[0][ipos], i1 = inputs[1][ipos], i2 = inputs[2][ipos];
 	outputs[0][opos] = i0 * matrix[0][0] + i1 * matrix[0][1] + i2 * matrix[0][2];
@@ -14,8 +15,9 @@ multiply_33(double **outputs, size_t opos, const double **inputs, size_t ipos, c
 
 
 static void
-multiply_nn(size_t n, double **outputs, size_t opos, const double **inputs, size_t ipos,
-            const double matrix[n][n], double buffer[n])
+multiply_nn(size_t n, double *restrict *restrict outputs, size_t opos,
+            const double *restrict *restrict inputs, size_t ipos,
+            const double matrix[n][n], double buffer[restrict n])
 {
 	size_t i, j;
 	for (j = 0; j < n; j++)
@@ -29,8 +31,9 @@ multiply_nn(size_t n, double **outputs, size_t opos, const double **inputs, size
 
 
 static void
-multiply_nm(size_t n, size_t m, double **outputs /* m */, size_t opos, const double **inputs /* n */,
-            size_t ipos, const double matrix[m][n], double buffer[n])
+multiply_nm(size_t n, size_t m, double *restrict *restrict outputs /* m */, size_t opos,
+            const double *restrict *restrict inputs /* n */, size_t ipos,
+            const double matrix[m][n], double buffer[restrict n])
 {
 	size_t i, j;
 	for (j = 0; j < n; j++)
@@ -44,9 +47,10 @@ multiply_nm(size_t n, size_t m, double **outputs /* m */, size_t opos, const dou
 
 
 void
-libglitter_colour_model_convert_rasters_double(size_t n, size_t m, double **outputs /* m */, const double **inputs /* n */,
-                                               size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
-                                               size_t input_cellsize, size_t width, size_t height, const double matrix[m][n])
+libglitter_colour_model_convert_rasters_double(size_t n, size_t m, double *restrict *restrict outputs /* m */,
+                                               const double *restrict *restrict inputs /* n */, size_t output_rowsize,
+                                               size_t output_cellsize, size_t input_rowsize, size_t input_cellsize,
+                                               size_t width, size_t height, const double (*matrix)[m] /* n */)
 {
 	size_t y, x, output_i, input_i, output_blanking, input_blanking;
 	double *buffer;
@@ -159,7 +163,7 @@ check(int same_rasters)
 				mat[i][j] = matrix[i][j];\
 		libglitter_colour_model_convert_rasters_double(NINPUTS, NOUTPUTS, outputs, (void *)inputs,\
 		                                               same_rasters ? 15 : 14, same_rasters ? 3 : 4,\
-		                                               15, 3, 5, 3, mat);\
+		                                               15, 3, 5, 3, (void *)mat);\
 		inputs[0] = input1;\
 		inputs[1] = input2;\
 		inputs[2] = input3;\

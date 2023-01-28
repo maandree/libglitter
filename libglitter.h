@@ -6,6 +6,25 @@
 #include <stdint.h>
 
 
+#if defined(__GNUC__) && !defined(__clang__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wpadded"
+#elif defined(__clang__)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wpadded"
+# pragma clang diagnostic ignored "-Wdocumentation"
+# pragma clang diagnostic ignored "-Wvla"
+#endif
+
+
+
+#if defined(__GNUC__) && !defined(__clang__)
+# define LIBGLITTER_GCC_ATTRS__(...) __attribute__((__VA_ARGS__))
+#else
+# define LIBGLITTER_GCC_ATTRS__(...)
+#endif
+
+
 /**
  * The application will use `double`-typed rasters
  */
@@ -147,6 +166,13 @@ int libglitter_enable_acceleration(uint64_t, int, void (*)(int, int, void *), vo
 
 
 /**
+ * Deallocates a render context (created by `libglitter_create_render_context`)
+ * 
+ * @param  this  The render context to deallocate
+ */
+void libglitter_free_render_context(LIBGLITTER_RENDER_CONTEXT *);
+
+/**
  * Create a render context for an input raster's specifications
  * 
  * Render context's are thread-safe
@@ -175,6 +201,7 @@ int libglitter_enable_acceleration(uint64_t, int, void (*)(int, int, void *), vo
  * 
  * The returned object will contain references to `cellmap` and `ncellvalues`
  */
+LIBGLITTER_GCC_ATTRS__(nonnull, warn_unused_result, malloc, malloc(libglitter_free_render_context, 1))
 LIBGLITTER_RENDER_CONTEXT *libglitter_create_render_context(size_t, size_t, size_t, size_t,
                                                             const uint8_t *, const uint8_t *);
 
@@ -189,13 +216,6 @@ LIBGLITTER_RENDER_CONTEXT *libglitter_create_render_context(size_t, size_t, size
  */
 void libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *, size_t);
 
-/**
- * Deallocates a render context (created by `libglitter_create_render_context`)
- * 
- * @param  this  The render context to deallocate
- */
-void libglitter_free_render_context(LIBGLITTER_RENDER_CONTEXT *);
-
 
 /**
  * Create one raster per monitor colour from a raster of
@@ -221,16 +241,18 @@ void libglitter_free_render_context(LIBGLITTER_RENDER_CONTEXT *);
  * @param  render_ctx       Rendering context created for the input raster's
  *                          specification
  */
-void libglitter_compose_double(double **, const double *restrict, size_t, size_t,
-                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
+LIBGLITTER_GCC_ATTRS__(nonnull)
+void libglitter_compose_double(double *restrict*, const double *restrict, size_t, size_t,
+                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *restrict);
 
 /**
  * This value is identical to `libglitter_compose_double`,
  * apart from it parameter types, see `libglitter_compose_double`
  * for details about this function
  */
-void libglitter_compose_float(float **, const float *restrict, size_t, size_t,
-                              size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
+LIBGLITTER_GCC_ATTRS__(nonnull)
+void libglitter_compose_float(float *restrict*, const float *restrict, size_t, size_t,
+                              size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *restrict);
 
 /**
  * Create one raster per monitor colour from a raster of
@@ -256,32 +278,36 @@ void libglitter_compose_float(float **, const float *restrict, size_t, size_t,
  * @param  render_ctx       Rendering context created for the input raster's
  *                          specification
  */
-void libglitter_compose_uint64(uint64_t **, const uint64_t *restrict, size_t, size_t,
-                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
+LIBGLITTER_GCC_ATTRS__(nonnull)
+void libglitter_compose_uint64(uint64_t *restrict *, const uint64_t *restrict, size_t, size_t,
+                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *restrict);
 
 /**
  * This value is identical to `libglitter_compose_uint64`,
  * apart from it parameter types, see `libglitter_compose_uint64`
  * for details about this function
  */
-void libglitter_compose_uint32(uint32_t **, const uint32_t *restrict, size_t, size_t,
-                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
+LIBGLITTER_GCC_ATTRS__(nonnull)
+void libglitter_compose_uint32(uint32_t *restrict *, const uint32_t *restrict, size_t, size_t,
+                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *restrict);
 
 /**
  * This value is identical to `libglitter_compose_uint64`,
  * apart from it parameter types, see `libglitter_compose_uint64`
  * for details about this function
  */
-void libglitter_compose_uint16(uint16_t **, const uint16_t *restrict, size_t, size_t,
-                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
+LIBGLITTER_GCC_ATTRS__(nonnull)
+void libglitter_compose_uint16(uint16_t *restrict *, const uint16_t *restrict, size_t, size_t,
+                               size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *restrict);
 
 /**
  * This value is identical to `libglitter_compose_uint64`,
  * apart from it parameter types, see `libglitter_compose_uint64`
  * for details about this function
  */
-void libglitter_compose_uint8(uint8_t **, const uint8_t *restrict, size_t, size_t,
-                              size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *);
+LIBGLITTER_GCC_ATTRS__(nonnull)
+void libglitter_compose_uint8(uint8_t *restrict *, const uint8_t *restrict, size_t, size_t,
+                              size_t, size_t, const LIBGLITTER_RENDER_CONTEXT *restrict);
 
 
 /**
@@ -305,6 +331,7 @@ void libglitter_compose_uint8(uint8_t **, const uint8_t *restrict, size_t, size_
  *
  * The values `colour1`, `colour2`, `colour3` must be valid but distinct
  */
+LIBGLITTER_GCC_ATTRS__(nonnull)
 void libglitter_reorder_rasters(void **, enum libglitter_colour, enum libglitter_colour, enum libglitter_colour);
 
 
@@ -322,6 +349,7 @@ void libglitter_reorder_rasters(void **, enum libglitter_colour, enum libglitter
  * @param  blue      The value `0xFFFF` shifted such that value
  *                   expresses pure blue (closest primary colour)
  */
+LIBGLITTER_GCC_ATTRS__(nonnull(1, 3))
 void libglitter_split_uint64_raster(uint16_t *[3], uint16_t **, uint64_t *, uint64_t, uint64_t, uint64_t);
 
 /**
@@ -338,6 +366,7 @@ void libglitter_split_uint64_raster(uint16_t *[3], uint16_t **, uint64_t *, uint
  * @param  blue      The value `0xFF` shifted such that value
  *                   expresses pure blue (closest primary colour)
  */
+LIBGLITTER_GCC_ATTRS__(nonnull(1, 3))
 void libglitter_split_uint32_raster(uint8_t *[3], uint8_t **, uint32_t *, uint32_t, uint32_t, uint32_t);
 
 
@@ -365,14 +394,18 @@ void libglitter_split_uint32_raster(uint8_t *[3], uint8_t **, uint32_t *, uint32
  *                     each subpixel colour; or `NULL` for the sRGB values
  *                     (this is only allowed if there are exactly 3 rasters)
  */
-void libglitter_desaturate_double(double **, size_t, size_t, size_t, size_t, size_t, double, const double *restrict);
+LIBGLITTER_GCC_ATTRS__(nonnull(1))
+void libglitter_desaturate_double(double *restrict *, size_t, size_t, size_t, size_t, size_t,
+                                  double, const double *restrict);
 
 /**
  * This value is identical to `libglitter_desaturate_double`,
  * apart from it parameter types, see `libglitter_desaturate_double`
  * for details about this function
  */
-void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_t, float, const float *restrict);
+LIBGLITTER_GCC_ATTRS__(nonnull(1))
+void libglitter_desaturate_float(float *restrict *, size_t, size_t, size_t, size_t, size_t,
+                                 float, const float *restrict);
 
 /**
  * Transform rasters from fully using subpixel rendering to
@@ -398,7 +431,8 @@ void libglitter_desaturate_float(float **, size_t, size_t, size_t, size_t, size_
  *                      each subpixel colour; or `NULL` for the sRGB values
  *                      (this is only allowed if there are exactly 3 rasters)
  */
-void libglitter_per_channel_desaturate_double(double **, size_t, size_t, size_t, size_t, size_t,
+LIBGLITTER_GCC_ATTRS__(nonnull(1, 7))
+void libglitter_per_channel_desaturate_double(double *restrict *, size_t, size_t, size_t, size_t, size_t,
                                               const double *restrict, const double *restrict);
 
 /**
@@ -406,7 +440,8 @@ void libglitter_per_channel_desaturate_double(double **, size_t, size_t, size_t,
  * apart from it parameter types, see `libglitter_per_channel_desaturate_double`
  * for details about this function
  */
-void libglitter_per_channel_desaturate_float(float **, size_t, size_t, size_t, size_t, size_t,
+LIBGLITTER_GCC_ATTRS__(nonnull(1, 7))
+void libglitter_per_channel_desaturate_float(float *restrict *, size_t, size_t, size_t, size_t, size_t,
                                              const float *restrict, const float *restrict);
 
 
@@ -443,18 +478,20 @@ void libglitter_per_channel_desaturate_float(float **, size_t, size_t, size_t, s
  * `white_x, white_y, white_Y` (it expands to three arguments)
  * if the output's whitepoint is the D65 illuminant
  */
+LIBGLITTER_GCC_ATTRS__(nonnull(1))
 void libglitter_get_colour_model_conversion_matrix_double(double[3][3], double, double, double, double,
                                                           double, double, double, double, double, int,
-                                                          double *, double *, double *);
+                                                          double *restrict, double *restrict, double *restrict);
 
 /**
  * This value is identical to `libglitter_get_colour_model_conversion_matrix_double`,
  * apart from it parameter types, see `libglitter_get_colour_model_conversion_matrix_double`
  * for details about this function
  */
+LIBGLITTER_GCC_ATTRS__(nonnull(1))
 void libglitter_get_colour_model_conversion_matrix_float(float[3][3], float, float, float, float,
                                                          float, float, float, float, float, int,
-                                                         float *, float *, float *);
+                                                         float *restrict, float *restrict, float *restrict);
 
 
 /**
@@ -486,17 +523,28 @@ void libglitter_get_colour_model_conversion_matrix_float(float[3][3], float, flo
  * @param  height           The vertical number of pixels in the rasters
  * @param  matrix           Colour model conversion matrix, in column-major order
  */
-void libglitter_colour_model_convert_rasters_double(size_t n, size_t m, double **, const double **, size_t,
-                                                    size_t, size_t, size_t, size_t, size_t, const double[m][n]);
+LIBGLITTER_GCC_ATTRS__(nonnull(3, 4, 11))
+void libglitter_colour_model_convert_rasters_double(size_t, size_t m, double *restrict *restrict,
+                                                    const double *restrict *restrict, size_t, size_t,
+                                                    size_t, size_t, size_t, size_t, const double (*)[m]);
 
 /**
  * This value is identical to `libglitter_colour_model_convert_rasters_double`,
  * apart from it parameter types, see `libglitter_colour_model_convert_rasters_double`
  * for details about this function
  */
-void libglitter_colour_model_convert_rasters_float(size_t n, size_t m, float **, const float **, size_t,
-                                                   size_t, size_t, size_t, size_t, size_t, const float[m][n]);
+LIBGLITTER_GCC_ATTRS__(nonnull(3, 4, 11))
+void libglitter_colour_model_convert_rasters_float(size_t, size_t m, float *restrict *restrict,
+                                                   const float *restrict *restrict, size_t, size_t,
+                                                   size_t, size_t, size_t, size_t, const float (*)[m]);
 
 
+
+#if defined(__GNUC__) && !defined(__clang__)
+# pragma GCC diagnostic pop
+#elif defined(__clang__)
+# pragma clang diagnostic pop
 #endif
-/* TODO add `restrict` where appropriate */
+
+#undef LIBGLITTER_GCC_ATTRS__
+#endif

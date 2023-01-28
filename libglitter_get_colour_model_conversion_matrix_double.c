@@ -3,12 +3,6 @@
 #ifndef TEST
 
 
-#if defined(__GNUC__) && !defined(__clang__)
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wunsuffixed-float-constants"
-#endif
-
-
 /**
  * CIE XYZ-to-sRGB conversion matrix,
  * in column-major order
@@ -17,11 +11,6 @@ static const double srgb[3][3] = {
 	{ 3.240446254647737056586720427731, -0.969266606244679751469561779231,  0.055643503564352832235773149705},
 	{-1.537134761820080353089679192635,  1.876011959788370209167851498933, -0.204026179735960239147729566866},
 	{-0.498530193022728773666329971093,  0.041556042214430065351304932619,  1.057226567722703292062647051353}};
-
-
-#if defined(__GNUC__) && !defined(__clang__)
-# pragma GCC diagnostic pop
-#endif
 
 
 static void
@@ -45,10 +34,9 @@ eliminate(double m[3][4]) /* row-major order */
 
 
 void
-libglitter_get_colour_model_conversion_matrix_double(double matrix[3][3], double c1x, double c1y,
-                                                     double c2x, double c2y, double c3x, double c3y,
-                                                     double white_x, double white_y, double white_Y,
-                                                     int xyz, double *c1Yp, double *c2Yp, double *c3Yp)
+libglitter_get_colour_model_conversion_matrix_double(double matrix[3][3], double c1x, double c1y, double c2x, double c2y,
+                                                     double c3x, double c3y, double white_x, double white_y, double white_Y,
+                                                     int xyz, double *restrict c1Yp, double *restrict c2Yp, double *restrict c3Yp)
 {
 	double mat[3][4];
 	double x1, x2, x3;
@@ -116,7 +104,6 @@ libglitter_get_colour_model_conversion_matrix_double(double matrix[3][3], double
 
 
 #define TOLERANCE 0.0001
-#define TOL 4
 
 #define RX 0.412457445582367576708548995157
 #define GX 0.357575865245515878143578447634

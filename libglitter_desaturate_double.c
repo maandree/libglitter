@@ -3,13 +3,8 @@
 #ifndef TEST
 
 
-#if defined(__GNUC__) && !defined(__clang__)
-# pragma GCC diagnostic ignored "-Wunsuffixed-float-constants"
-#endif
-
-
 void
-libglitter_desaturate_double(double **rasters, size_t nrasters, size_t rowsize, size_t cellsize,
+libglitter_desaturate_double(double *restrict *rasters, size_t nrasters, size_t rowsize, size_t cellsize,
                              size_t width, size_t height, double saturation, const double *restrict primary_ys)
 {
 	size_t y, x, ch, raster_y, raster_i;
@@ -58,6 +53,7 @@ main(void)
 	double rasters1[4 * 10 * 3][4], *rasters1list[4], primary_ys[4], saturation;
 	double rasters2[4 * 10 * 3][4], *rasters2list[4], saturations[4];
 	size_t i, j;
+	int randint;
 
 	void *randptr = malloc(1);
 	srand((unsigned int)(uintptr_t)randptr);
@@ -73,24 +69,27 @@ main(void)
 		for (i = 0; i < 4; i++) {\
 			rasters1list[i] = rasters1[i];\
 			rasters2list[i] = rasters2[i];\
-			primary_ys[i] = rand() / (double)RAND_MAX;\
-			for (j = 0; j < 4 * 10 * 3; j++)\
-				rasters1[j][i] = rand() / (double)RAND_MAX;\
+			randint = rand();\
+			primary_ys[i] = (double)randint / (double)RAND_MAX;\
+			for (j = 0; j < 4 * 10 * 3; j++) {\
+				randint = rand();\
+				rasters1[j][i] = (double)randint / (double)RAND_MAX;\
+			}\
 		}\
 		memcpy(rasters2, rasters1, sizeof(rasters1));\
 	} while (0)
 
-	RANDOMISE(rand() / (double)RAND_MAX);
+	RANDOMISE((double)(randint = rand(), randint) / (double)RAND_MAX);
 	libglitter_desaturate_double(rasters1list, 4, 10, 3, 7, 4, saturation, primary_ys);
 	libglitter_per_channel_desaturate_double(rasters2list, 4, 10, 3, 7, 4, saturations, primary_ys);
 	ASSERT(!memcmp(rasters1, rasters2, sizeof(rasters1)));
 
-	RANDOMISE(rand() / (double)RAND_MAX);
+	RANDOMISE((double)(randint = rand(), randint) / (double)RAND_MAX);
 	libglitter_desaturate_double(rasters1list, 3, 10, 3, 7, 4, saturation, primary_ys);
 	libglitter_per_channel_desaturate_double(rasters2list, 3, 10, 3, 7, 4, saturations, primary_ys);
 	ASSERT(!memcmp(rasters1, rasters2, sizeof(rasters1)));
 
-	RANDOMISE(rand() / (double)RAND_MAX);
+	RANDOMISE((double)(randint = rand(), randint) / (double)RAND_MAX);
 	libglitter_desaturate_double(rasters1list, 3, 10, 3, 7, 4, saturation, NULL);
 	libglitter_per_channel_desaturate_double(rasters2list, 3, 10, 3, 7, 4, saturations, NULL);
 	ASSERT(!memcmp(rasters1, rasters2, sizeof(rasters1)));

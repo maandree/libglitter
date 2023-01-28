@@ -14,8 +14,8 @@
 
 
 static void
-simple(uint64_t **outputs, const uint64_t *restrict input, size_t output_rowsize, size_t output_cellsize,
-       size_t input_rowsize, size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *render_ctx)
+simple(uint64_t *restrict *outputs, const uint64_t *restrict input, size_t output_rowsize, size_t output_cellsize,
+       size_t input_rowsize, size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *restrict render_ctx)
 {
 	size_t y, x, output_y, output_i, input_blanking;
 	size_t cell00 = render_ctx->cells[0][0], cell01 = render_ctx->cells[0][1];
@@ -39,7 +39,7 @@ simple(uint64_t **outputs, const uint64_t *restrict input, size_t output_rowsize
 
 
 static void
-generic(uint64_t **outputs, size_t noutputs, const uint64_t *restrict input,
+generic(uint64_t *restrict *outputs, size_t noutputs, const uint64_t *restrict input,
         size_t output_rowsize, size_t output_cellsize, size_t input_rowsize,
         size_t width, size_t height, size_t widthmul, size_t heightmul,
         const uint8_t *restrict cellmap, const uint8_t *restrict ncellvalues)
@@ -77,8 +77,8 @@ generic(uint64_t **outputs, size_t noutputs, const uint64_t *restrict input,
 
 
 void
-libglitter_compose_uint64(uint64_t **outputs, const uint64_t *restrict input, size_t output_rowsize, size_t output_cellsize,
-                          size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *render_ctx)
+libglitter_compose_uint64(uint64_t *restrict *outputs, const uint64_t *restrict input, size_t output_rowsize, size_t output_cellsize,
+                          size_t width, size_t height, const LIBGLITTER_RENDER_CONTEXT *restrict render_ctx)
 {
 	if (render_ctx->render_method == RENDER_METHOD_VSTRIPS) {
 		vstrips(outputs, input, output_rowsize, output_cellsize, render_ctx->rowsize, width, height, render_ctx->cellmap);

@@ -45,31 +45,33 @@ callback_null(int ret, int err, void *user)
 int
 main(void)
 {
+#define ALL (~UINT64_C(0))
+
 	char data = 'u';
 	ASSERT(!libglitter_enable_acceleration(0, 0, NULL, NULL, NULL));
 	ASSERT(!libglitter_enable_acceleration(0, 1, NULL, NULL, NULL));
-	ASSERT(!libglitter_enable_acceleration(~0, 0, NULL, NULL, NULL));
-	ASSERT(!libglitter_enable_acceleration(~0, 1, NULL, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 0, NULL, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 1, NULL, NULL, NULL));
 	ASSERT(!libglitter_enable_acceleration(0, 0, NULL, &data, NULL));
 	ASSERT(!libglitter_enable_acceleration(0, 1, NULL, &data, NULL));
-	ASSERT(!libglitter_enable_acceleration(~0, 0, NULL, &data, NULL));
-	ASSERT(!libglitter_enable_acceleration(~0, 1, NULL, &data, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 0, NULL, &data, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 1, NULL, &data, NULL));
 	ASSERT(callback_calls == 0);
 	ASSERT(!libglitter_enable_acceleration(0, 0, callback, &data, NULL));
 	ASSERT(callback_calls == 1);
 	ASSERT(!libglitter_enable_acceleration(0, 1, callback, &data, NULL));
 	ASSERT(callback_calls == 2);
-	ASSERT(!libglitter_enable_acceleration(~0, 0, callback, &data, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 0, callback, &data, NULL));
 	ASSERT(callback_calls == 3);
-	ASSERT(!libglitter_enable_acceleration(~0, 1, callback, &data, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 1, callback, &data, NULL));
 	ASSERT(callback_calls == 4);
 	ASSERT(!libglitter_enable_acceleration(0, 0, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 5);
 	ASSERT(!libglitter_enable_acceleration(0, 1, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 6);
-	ASSERT(!libglitter_enable_acceleration(~0, 0, callback_null, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 0, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 7);
-	ASSERT(!libglitter_enable_acceleration(~0, 1, callback_null, NULL, NULL));
+	ASSERT(!libglitter_enable_acceleration(ALL, 1, callback_null, NULL, NULL));
 	ASSERT(callback_calls == 8);
 	return 0;
 }

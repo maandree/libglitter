@@ -43,7 +43,8 @@ libglitter_create_render_context(size_t noutputs, size_t rowsize, size_t widthmu
 	return this;
 
 fail:
-	libglitter_free_render_context(this);
+	free(this->cellweights_double);
+	free(this);
 	return NULL;
 }
 

@@ -3,13 +3,8 @@
 #ifndef TEST
 
 
-#if defined(__GNUC__) && !defined(__clang__)
-# pragma GCC diagnostic ignored "-Wunsuffixed-float-constants"
-#endif
-
-
 void
-libglitter_per_channel_desaturate_double(double **rasters, size_t nrasters, size_t rowsize, size_t cellsize,
+libglitter_per_channel_desaturate_double(double *restrict *rasters, size_t nrasters, size_t rowsize, size_t cellsize,
                                          size_t width, size_t height, const double *restrict saturations,
                                          const double *restrict primary_ys)
 {
@@ -54,7 +49,6 @@ libglitter_per_channel_desaturate_double(double **rasters, size_t nrasters, size
 
 
 #define TOLERANCE 0.0001
-#define TOL 4
 
 #define RY 0.212673370378408277403536885686
 #define GY 0.715151730491031756287156895269
