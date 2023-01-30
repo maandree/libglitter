@@ -87,6 +87,13 @@
  */
 #define LIBGLITTER_FEATURE_COLOUR_MODEL    UINT64_C(0x0000000000000200)
 
+/**
+ * The allocation will use at least one of the functions
+ * `libglitter_redistribute_energy_double`, and
+ * `libglitter_redistribute_energy_float`
+ */
+#define LIBGLITTER_FEATURE_REDISTRIBUTE    UINT64_C(0x0000000000000400)
+
 
 /**
  * The CIE xyY values of the D65 illuminant
@@ -141,6 +148,7 @@ enum libglitter_colour {
  *                    - LIBGLITTER_FEATURE_UINT32_TYPE,
  *                    - LIBGLITTER_FEATURE_UINT16_TYPE,
  *                    - LIBGLITTER_FEATURE_UINT8_TYPE,
+ '                    - LIBGLITTER_FEATURE_REDISTRIBUTE,
  *                    - LIBGLITTER_FEATURE_COMPOSE,
  *                    - LIBGLITTER_FEATURE_CU_DESATURATION,
  *                    - LIBGLITTER_FEATURE_PC_DESATURATION, and
@@ -215,6 +223,86 @@ LIBGLITTER_RENDER_CONTEXT *libglitter_create_render_context(size_t, size_t, size
  * @param  rowsize  The number of cells per row in the input raster
  */
 void libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *, size_t);
+
+
+/**
+ * Apply a horizontal, 1-dimensional convolution kernel
+ * and a vertical, 1-dimensional convolution kernel
+ * (both are optional) to kernel to blur the text in
+ * order to reduce colour fringing
+ * 
+ * Each raster shall be row-major ordered an shall
+ * have horizontally adjacent cells adjacent in memory:
+ * the is no space between the cells' memory areas if
+ * there is no horizontal space between them in the
+ * raster
+ * 
+ * @param  output          Output subpixel raster, need not be initialised;
+ *                         this raster is latter used as the input raster
+ *                         for the `libglitter_compose_double` function.
+ *                         This raster is assumed to have the height
+ *                         `height + (vkernelsize - 1)` and the width
+ *                         `width + (hkernelsize - 1)`; the text will be
+ *                         offset from the top by `(vkernelsize - 1) / 2`
+ *                         cells downward and and from the left by
+ *                         `(hkernelsize - 1) / 2` cells rightward
+ * @param  input           Input subpixel raster; this raster must have
+ *                         a left padding and a right padding of
+ *                         `hkernel - 1` zero-initialised cells, as well
+ *                         as a top padding and a bottom padding of
+ *                         `vkernel - 1` zero-initialised cells. The
+ *                         the pointer itself shall point to the first
+ *                         pixel, the topmost and leftmost pixel that
+ *                         is not part of the padding.
+ * @param  output_rowsize  The number of cells a pointer to cell in
+ *                         `output` must be offset with to get to the
+ *                         cell on the next row but in the same column
+ * @param  input_rowsize   The number of cells a pointer to cell in
+ *                         `input` must be offset with to get to the
+ *                         cell on the next row but in the same column
+ * @param  width           The width of the input raster, excluding
+ *                         padding, in cells
+ * @param  height          The height of the input raster, excluding
+ *                         padding, in cells
+ * @param  hkernelsize     The size (number of elements) of `hkernel`;
+ *                         must be odd; if 1, `hkernel` is not applied
+ * @param  vkernelsize     The size (number of elements) of `vkernel`;
+ *                         must be odd; if 1, `vkernel` is not applied
+ * @param  hkernel         The horizontal convolution kernel; the sum
+ *                         of its elements shall be 1. It can be `NULL`
+ *                         if `hkernelsize` is 1, as it will not be
+ *                         applied
+ * @param  vkernel         The vertical convolution kernel; the sum
+ *                         of its elements shall be 1. It can be `NULL`
+ *                         if `vkernelsize` is 1, as it will not be
+ *                         applied
+ * 
+ * If the input value of the `widthmul` parameter to the
+ * `libglitter_create_render_context` function is `1`, it
+ * the suggested `hkernel` is `{1.}`, otherwise the suggested
+ * `hkernel` is `{1/3., 1/3., 1/3.}`. Likewise, if the
+ * input value of the `heightmul` parameter to the
+ * `libglitter_create_render_context` function is `1`, it
+ * the suggested `vkernel` is `{1.}`, otherwise the suggested
+ * `vkernel` is `{1/3., 1/3., 1/3.}`. Of course user
+ * experimentation is required to find the best kernel.
+ */
+LIBGLITTER_GCC_ATTRS__(nonnull(1, 2))
+void libglitter_redistribute_energy_double(double *restrict output, const double *restrict input,
+                                           size_t output_rowsize, size_t input_rowsize, size_t width,
+                                           size_t height, size_t hkernelsize, size_t vkernelsize,
+                                           const double *hkernel, const double *vkernel);
+
+/**
+ * This value is identical to `libglitter_redistribute_energy_double`,
+ * apart from it parameter types, see `libglitter_redistribute_energy_double`
+ * for details about this function
+ */
+LIBGLITTER_GCC_ATTRS__(nonnull(1, 2))
+void libglitter_redistribute_energy_float(float *restrict output, const float *restrict input,
+                                          size_t output_rowsize, size_t input_rowsize, size_t width,
+                                          size_t height, size_t hkernelsize, size_t vkernelsize,
+                                          const float *hkernel, const float *vkernel);
 
 
 /**

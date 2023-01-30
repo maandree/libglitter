@@ -34,6 +34,8 @@ OBJ =\
 	libglitter_get_colour_model_conversion_matrix_float.o\
 	libglitter_per_channel_desaturate_double.o\
 	libglitter_per_channel_desaturate_float.o\
+	libglitter_redistribute_energy_double.o\
+	libglitter_redistribute_energy_float.o\
 	libglitter_reorder_rasters.o\
 	libglitter_split_uint32_raster.o\
 	libglitter_split_uint64_raster.o\
