@@ -9,21 +9,20 @@ vconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height,
 	size_t y, x, i;
 
 	if (kernelsize == 3 && kernel[0] == kernel[1] && kernel[1] == kernel[2]) {
-		raster = &raster[-2 * rowsize];
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++)
-				raster[x] += raster[1 * rowsize + x];
+				raster[x] += raster[x + 1 * rowsize];
 			for (x = 0; x < width; x++) {
-				raster[x] += raster[2 * rowsize + x];
+				raster[x] += raster[x + 2 * rowsize];
 				raster[x] *= kernel[0];
 			}
 			raster = &raster[rowsize];
 		}
-		for (x = 0; x < width; x++)
+		for (x = 0; x < width; x++) {
+			raster[x] += raster[x + rowsize];
 			raster[x] *= kernel[0];
-		raster = &raster[rowsize];
-		for (x = 0; x < width; x++)
-			raster[x] *= kernel[0];
+			raster[x + rowsize] *= kernel[0];
+		}
 
 	} else {
 		for (y = 0; y < height; y++) {
@@ -31,7 +30,15 @@ vconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height,
 				raster[x] *= kernel[0];
 			for (i = 1; i < kernelsize; i++)
 				for (x = 0; x < width; x++)
-					raster[x] = fma(raster[i * rowsize + x], kernel[i], raster[x]);
+					raster[x] = fma(raster[x + i * rowsize], kernel[i], raster[x]);
+			raster = &raster[rowsize];
+		}
+		for (y = 0; y < kernelsize - 1; y++) {
+			for (x = 0; x < width; x++)
+				raster[x] *= kernel[0];
+			for (i = 1; i < kernelsize - i - y; i++)
+				for (x = 0; x < width; x++)
+					raster[x] = fma(raster[x + i * rowsize], kernel[i], raster[x]);
 			raster = &raster[rowsize];
 		}
 	}
@@ -46,12 +53,12 @@ hconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height,
 	if (kernelsize == 3 && kernel[0] == kernel[1] && kernel[1] == kernel[2]) {
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
-				raster[x - 1] += raster[x];
-				raster[x - 2] += raster[x];
-				raster[x - 2] *= kernel[0];
+				raster[x + 1] += raster[x + 2];
+				raster[x] += raster[x + 2];
+				raster[x] *= kernel[0];
 			}
-			raster[width - 2] *= kernel[0];
-			raster[width - 1] *= kernel[0];
+			raster[width] *= kernel[0];
+			raster[width + 1] *= kernel[0];
 			raster = &raster[rowsize];
 		}
 
@@ -62,7 +69,13 @@ hconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height,
 				for (i = 1; i < kernelsize; i++)
 					raster[x] = fma(raster[x + i], kernel[i], raster[x]);
 			}
-			raster = &raster[rowsize];
+			raster = &raster[width];
+			for (x = 0; x < kernelsize - 1; x++) {
+				raster[x] *= kernel[0];
+				for (i = 1; i < kernelsize - 1 - x; i++)
+					raster[x] = fma(raster[x + i], kernel[i], raster[x]);
+			}
+			raster = &raster[rowsize - width];
 		}
 	}
 }
@@ -73,9 +86,9 @@ libglitter_redistribute_energy_double(double *restrict raster, size_t rowsize, s
                                       size_t hkernelsize, size_t vkernelsize, const double *hkernel, const double *vkernel)
 {
 	if (vkernelsize > 1) {
-		raster -= (hkernelsize - 1) * rowsize;
+		raster -= (vkernelsize - 1) * rowsize;
 		vconvolute(raster, rowsize, width, height, vkernelsize, vkernel);
-		height += hkernelsize - 1;
+		height += vkernelsize - 1;
 	}
 	if (hkernelsize > 1) {
 		raster -= hkernelsize - 1;
@@ -100,7 +113,97 @@ eq(double a, double b)
 int
 main(void)
 {
-	return 0; /* TODO add test */
+	double raster[100], hkern[15], vkern[15];
+	size_t i;
+
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		raster[i] = (double)i;
+	hkern[0] = vkern[0] = 0;
+	libglitter_redistribute_energy_double(&raster[11], 10, 7, 8, 1, 1, NULL, NULL);
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		ASSERT(raster[i] == (double)i);
+	libglitter_redistribute_energy_double(&raster[11], 10, 7, 8, 1, 1, hkern, NULL);
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		ASSERT(raster[i] == (double)i);
+	libglitter_redistribute_energy_double(&raster[11], 10, 7, 8, 1, 1, NULL, vkern);
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		ASSERT(raster[i] == (double)i);
+	libglitter_redistribute_energy_double(&raster[11], 10, 7, 8, 1, 1, hkern, vkern);
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		ASSERT(raster[i] == (double)i);
+
+	memset(raster, 0, sizeof(raster));
+	raster[53] = 1;
+	raster[57] = 2;
+	hkern[0] = 1 / 3.;
+	hkern[1] = 1 / 3.;
+	hkern[2] = 1 / 3.;
+	libglitter_redistribute_energy_double(&raster[12], 10, 7, 8, 3, 1, hkern, NULL);
+	ASSERT(eq(raster[52 - 1], 1 / 3.));
+	ASSERT(eq(raster[53 - 1], 1 / 3.));
+	ASSERT(eq(raster[54 - 1], 1 / 3.));
+	ASSERT(eq(raster[56 - 1], 2 / 3.));
+	ASSERT(eq(raster[57 - 1], 2 / 3.));
+	ASSERT(eq(raster[58 - 1], 2 / 3.));
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		if (!(51 <= i && i <= 53) && !(55 <= i && i <= 57))
+			ASSERT(!raster[i]);
+
+	memset(raster, 0, sizeof(raster));
+	raster[53] = 1;
+	raster[57] = 2;
+	hkern[0] = 1 / 4.;
+	hkern[1] = 1 / 2.;
+	hkern[2] = 1 / 4.;
+	libglitter_redistribute_energy_double(&raster[12], 10, 7, 8, 3, 1, hkern, NULL);
+	ASSERT(eq(raster[52 - 1], 1 / 4.));
+	ASSERT(eq(raster[53 - 1], 1 / 2.));
+	ASSERT(eq(raster[54 - 1], 1 / 4.));
+	ASSERT(eq(raster[56 - 1], 2 / 4.));
+	ASSERT(eq(raster[57 - 1], 2 / 2.));
+	ASSERT(eq(raster[58 - 1], 2 / 4.));
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		if (!(51 <= i && i <= 53) && !(55 <= i && i <= 57))
+			ASSERT(!raster[i]);
+
+	memset(raster, 0, sizeof(raster));
+	raster[35] = 1;
+	raster[75] = 2;
+	vkern[0] = 1 / 3.;
+	vkern[1] = 1 / 3.;
+	vkern[2] = 1 / 3.;
+	libglitter_redistribute_energy_double(&raster[21], 10, 8, 7, 1, 3, NULL, vkern);
+	ASSERT(eq(raster[25 - 10], 1 / 3.));
+	ASSERT(eq(raster[35 - 10], 1 / 3.));
+	ASSERT(eq(raster[45 - 10], 1 / 3.));
+	ASSERT(eq(raster[65 - 10], 2 / 3.));
+	ASSERT(eq(raster[75 - 10], 2 / 3.));
+	ASSERT(eq(raster[85 - 10], 2 / 3.));
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		if (i != 15 && i != 25 && i != 35 && i != 55 && i != 65 && i != 75)
+			ASSERT(!raster[i]);
+
+	memset(raster, 0, sizeof(raster));
+	raster[35] = 1;
+	raster[75] = 2;
+	vkern[0] = 1 / 4.;
+	vkern[1] = 1 / 2.;
+	vkern[2] = 1 / 4.;
+	libglitter_redistribute_energy_double(&raster[21], 10, 8, 7, 1, 3, NULL, vkern);
+	ASSERT(eq(raster[25 - 10], 1 / 4.));
+	ASSERT(eq(raster[35 - 10], 1 / 2.));
+	ASSERT(eq(raster[45 - 10], 1 / 4.));
+	ASSERT(eq(raster[65 - 10], 2 / 4.));
+	ASSERT(eq(raster[75 - 10], 2 / 2.));
+	ASSERT(eq(raster[85 - 10], 2 / 4.));
+	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
+		if (i != 15 && i != 25 && i != 35 && i != 55 && i != 65 && i != 75)
+			ASSERT(!raster[i]);
+
+	/* TODO test edges */
+	/* TODO test hkern+vkern */
+
+	return 0;
 }
 
 
