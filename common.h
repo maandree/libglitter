@@ -55,6 +55,7 @@ struct libglitter_render_context {
 # pragma GCC diagnostic ignored "-Wdouble-promotion"
 #elif defined(__clang__)
 # pragma clang diagnostic ignored "-Wfloat-equal"
+# pragma clang diagnostic ignored "-Wfloat-conversion"
 # pragma clang diagnostic ignored "-Wdouble-promotion"
 # pragma clang diagnostic ignored "-Wimplicit-float-conversion"
 #endif

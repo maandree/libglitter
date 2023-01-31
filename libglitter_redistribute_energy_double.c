@@ -3,12 +3,33 @@
 #ifndef TEST
 
 
+#if defined(__GNUC__) && !defined(__clang__)
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wfloat-equal"
+#elif defined(__clang__)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wfloat-equal"
+#endif
+
+static int
+exactly(double a, double b)
+{
+	return a == b;
+}
+
+#if defined(__GNUC__) && !defined(__clang__)
+# pragma GCC diagnostic pop
+#elif defined(__clang__)
+# pragma clang diagnostic pop
+#endif
+
+
 static void
 vconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height, size_t kernelsize, const double *kernel)
 {
 	size_t y, x, i;
 
-	if (kernelsize == 3 && kernel[0] == kernel[1] && kernel[1] == kernel[2]) {
+	if (kernelsize == 3 && exactly(kernel[0], kernel[1]) && exactly(kernel[1], kernel[2])) {
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++)
 				raster[x] += raster[x + 1 * rowsize];
@@ -50,7 +71,7 @@ hconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height,
 {
 	size_t y, x, i;
 
-	if (kernelsize == 3 && kernel[0] == kernel[1] && kernel[1] == kernel[2]) {
+	if (kernelsize == 3 && exactly(kernel[0], kernel[1]) && exactly(kernel[1], kernel[2])) {
 		for (y = 0; y < height; y++) {
 			for (x = 0; x < width; x++) {
 				raster[x + 1] += raster[x + 2];
