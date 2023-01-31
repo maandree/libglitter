@@ -7,13 +7,33 @@ static void
 vconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height, size_t kernelsize, const double *kernel)
 {
 	size_t y, x, i;
-	for (y = 0; y < height; y++) {
+
+	if (kernelsize == 3 && kernel[0] == kernel[1] && kernel[1] == kernel[2]) {
+		raster = &raster[-2 * rowsize];
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++)
+				raster[x] += raster[1 * rowsize + x];
+			for (x = 0; x < width; x++) {
+				raster[x] += raster[2 * rowsize + x];
+				raster[x] *= kernel[0];
+			}
+			raster = &raster[rowsize];
+		}
 		for (x = 0; x < width; x++)
 			raster[x] *= kernel[0];
-		for (i = 1; i < kernelsize; i++)
-			for (x = 0; x < width; x++)
-				raster[x] = fma(raster[i * rowsize + x], kernel[i], raster[x]);
 		raster = &raster[rowsize];
+		for (x = 0; x < width; x++)
+			raster[x] *= kernel[0];
+
+	} else {
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++)
+				raster[x] *= kernel[0];
+			for (i = 1; i < kernelsize; i++)
+				for (x = 0; x < width; x++)
+					raster[x] = fma(raster[i * rowsize + x], kernel[i], raster[x]);
+			raster = &raster[rowsize];
+		}
 	}
 }
 
@@ -22,13 +42,28 @@ static void
 hconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height, size_t kernelsize, const double *kernel)
 {
 	size_t y, x, i;
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-			raster[x] *= kernel[0];
-			for (i = 1; i < kernelsize; i++)
-				raster[x] = fma(raster[x + i], kernel[i], raster[x]);
+
+	if (kernelsize == 3 && kernel[0] == kernel[1] && kernel[1] == kernel[2]) {
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++) {
+				raster[x - 1] += raster[x];
+				raster[x - 2] += raster[x];
+				raster[x - 2] *= kernel[0];
+			}
+			raster[width - 2] *= kernel[0];
+			raster[width - 1] *= kernel[0];
+			raster = &raster[rowsize];
 		}
-		raster = &raster[rowsize];
+
+	} else {
+		for (y = 0; y < height; y++) {
+			for (x = 0; x < width; x++) {
+				raster[x] *= kernel[0];
+				for (i = 1; i < kernelsize; i++)
+					raster[x] = fma(raster[x + i], kernel[i], raster[x]);
+			}
+			raster = &raster[rowsize];
+		}
 	}
 }
 

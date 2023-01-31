@@ -241,14 +241,14 @@ void libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *, size_t);
  * `(hkernelsize - 1) / 2` cells to the left and to
  * the right, and `(vkernelsize - 1) / 2` cells to
  * the up as well as down. The caller is responsible
- * for furthering extending the image by `widthmul`
- * - (hkernelsize - 1) / 2 % widthmul` cells both to
- * on the left and on the right, and by `heightmul`
- * - (vkernelsize - 1) / 2 % heightmul` cells both
- * up and down (where `widthmul` and `heightmul` are
- * arguments to the `libglitter_create_render_context`
- * function); so that the raster can be input to
- * `libglitter_compose_double`.
+ * for furthering extending the image by `(widthmul`
+ * - (hkernelsize - 1) / 2 % widthmul) % widthmul`
+ * cells both to on the left and on the right, and
+ * by `(heightmul` - (vkernelsize - 1) / 2 % heightmul)
+ * % heightmul` cells both up and down (where
+ * `widthmul` and `heightmul` are arguments to the
+ * `libglitter_create_render_context` function); so that
+ * the raster can be input to `libglitter_compose_double`.
  * 
  * @param  raster          The subpixel raster. The must be padded with
  *                         zero-initialised cells on the left side and
