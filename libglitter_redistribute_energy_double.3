@@ -1,0 +1,170 @@
+.TH LIBGLITTER_REDISTRIBUTE_ENERGY_* 3 LIBGLITTER
+.SH NAME
+libglitter_redistribute_energy_* - Slight blur a text to significantly reduce colour fringing
+.SH SYNOPSIS
+.LP
+.nf
+#include <libglitter.h>
+
+void libglitter_redistribute_energy_double(double *restrict \fIraster\fP, size_t \fIrowsize\fP,
+                                           size_t \fIwidth\fP, size_t \fIheight\fP,
+                                           size_t \fIhkernelsize\fP, size_t \fIvkernelsize\fP,
+                                           const double *\fIhkernel\fP, const double *\fIvkernel\fP);
+
+void libglitter_redistribute_energy_float(float *restrict \fIraster\fP, size_t \fIrowsize\fP,
+                                          size_t \fIwidth\fP, size_t \fIheight\fP,
+                                          size_t \fIhkernelsize\fP, size_t \fIvkernelsize\fP,
+                                          const float *\fIhkernel\fP, const float *\fIvkernel\fP);
+.fi
+.PP
+Link with
+.IR "-lglitter -lm" .
+.SH DESCRIPTION
+The
+.BR libglitter_redistribute_energy_double ()
+and
+.BR libglitter_redistribute_energy_float ()
+functions up to two 1-dimension convolution kernels (one horizontal
+and one vertical) to a raster. The goal is to slightly blur
+(redistribute energy between adjacent subpixels) the text
+which reduces colour fringing.
+.PP
+The
+.I raster
+argument shall be the an image of the text rendered at
+subpixel-resolution. It will be modified in place. It
+shall be a row-major ordered raster where horizontally
+adjacent cells are adjacent in memory (the shall not
+be any gapes between the cells' memory areas), however
+they may be unused memory between each row. The
+.I width
+parameter specifies how many cells there are, horizontally,
+in the image. The
+.I rowsize
+parameter specifies how many cells a pointer must be offset
+with to mow down a row but stay in the same column: it is
+.I width
+plus the number of unused elements between each row.
+The
+.I height
+parameter specifies how many cells there are, vertically,
+in the image.
+.PP
+The functions apply the horizontal convolution kernel
+.I hkernel
+and the
+vertical convolution kernel
+.I vkernel
+to the raster. The functions may assume that the sub of
+the elements in each kernel is 1. Each kernel shall have
+an odd size. The size is specified via the
+.I hkernelsize
+parameter for
+.I hkernel
+and the
+.I vkernelsize
+parameter for
+.IR vkernel .
+If
+.I hkernelsize
+is 1,
+.I hkernel
+will be ignored and may be
+.IR NULL .
+If
+.I vkernelsize
+is 1,
+.I vkernel
+will be ignored and may be
+.IR NULL .
+The kernels are applied to each cell offset by the half
+of the kernelsize (less 1). However, the function shifts
+the image by
+.I (hkernelsize-1)/2
+cells to the left, and also extends the image by this
+amount both on the left and on the right, and it also
+shifts the image by
+.I (vkernelsize-1)/2
+cells to upwards, and and also extends the image by
+this amount both above and below.
+.PP
+Because the function is extends the image by
+.I (hkernelsize-1)
+cells horizontally and by
+.I (vkernelsize-1)
+cells vertically, the user must provide a raster that
+is prepadded with zeroes. This padding shall be
+.I (hkernelsize-1)
+cells on the left and
+.I (vkernelsize-1)
+cells on the top; nothing on the right or on the buttom.
+But the pointer
+.I raster
+shall point to the first cell after this padding; after
+the function returns however, the new raster starts at
+the first cell in the padding. But additionally, the
+user must pad each edge of the raster with zeroes so
+there is a raster, than can be input to
+.BR libglitter_compose_double (3)
+and
+.BR libglitter_compose_float (3),
+first the first cell in the raster is the first cell of
+the first pixel and which have all cells for all pixels.
+Specifically, the user shall extend the raster further by
+.I (widthmul-(hkernelsize-1)/2%widthmul)%widthmul
+cells on both the left and on the right, and by
+.I (heightmul-(vkernelsize-1)/2%heightmul)%heightmul
+cells on both the top and on the bottom, where
+.I widthmul
+and
+.I heightmul
+are arguments to the
+.BR libglitter_create_render_context (3)
+function.
+.PP
+By default, these functions do not use hardware acceleration,
+they run on the CPU. However the
+.BR libglitter_enable_acceleration (3)
+may be able to enable hardware acceleration for these
+functions. It will require at least the following bits in
+its first argument to enable hardware acceleration:
+.RS
+.TP
+.I LIBGLITTER_FEATURE_REDISTRIBUTE | LIBGLITTER_FEATURE_DOUBLE_TYPE
+for
+.BR libglitter_redistribute_energy_double (),
+or
+.TP
+.I LIBGLITTER_FEATURE_REDISTRIBUTE | LIBGLITTER_FEATURE_FLOAT_TYPE
+for
+.BR libglitter_redistribute_energy_float ().
+.RE
+.SH APPLICATION USAGE
+The value 1 is suggested for
+.I hkernelsize
+if the monitor uses vertically stacked subpixels,
+the value 3 with the
+.I hkernel
+.I {1/3.,1/3.,1/3.}
+is suggested otherwise as a starting point.
+Similarly, the value 1 is suggested for
+.I vkernelsize
+if the monitor uses horizontally stacked subpixels,
+the value 3 with the
+.I vkernel
+.I {1/3.,1/3.,1/3.} 
+is suggested otherwise as a starting point. Because of
+both monitor differences, and more important, user
+differences, experimentation from the user is required
+the find the best convolution kernels, however, it is
+safe to assumes that the suggestions on the singleton
+kernel
+.RI ( {1} )
+is optional when suggested.
+.SH RETURN VALUES
+None.
+.SH ERRORS
+None.
+.SH SEE ALSO
+.BR libglitter (7),
+.BR libglitter_compose_double (3)

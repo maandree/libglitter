@@ -69,7 +69,7 @@ hconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height,
 
 
 void
-libglitter_redistribute_energy_double(double *restrict raster, size_t rowsize, size_t width, size_t height, /* TODO add man page */
+libglitter_redistribute_energy_double(double *restrict raster, size_t rowsize, size_t width, size_t height,
                                       size_t hkernelsize, size_t vkernelsize, const double *hkernel, const double *vkernel)
 {
 	if (vkernelsize > 1) {
