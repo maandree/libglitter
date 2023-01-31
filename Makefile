@@ -62,6 +62,7 @@ libglitter_compose_uint64.o: libglitter_compose_double.c
 libglitter_compose_uint8.o: libglitter_compose_uint64.c libglitter_compose_double.c
 libglitter_desaturate_float.o: libglitter_desaturate_double.c
 libglitter_per_channel_desaturate_float.o: libglitter_per_channel_desaturate_double.c
+libglitter_redistribute_energy_float.o: libglitter_redistribute_energy_double.c
 libglitter_split_uint32_raster.o: libglitter_split_uint64_raster.c
 $(TESTS): $(HDR) libglitter.a
 libglitter_compose_float.test: libglitter_compose_double.c
@@ -71,6 +72,7 @@ libglitter_compose_uint64.test: libglitter_compose_double.c
 libglitter_compose_uint8.test: libglitter_compose_uint64.c libglitter_compose_double.c
 libglitter_desaturate_float.test: libglitter_desaturate_double.c
 libglitter_per_channel_desaturate_float.test: libglitter_per_channel_desaturate_double.c
+libglitter_redistribute_energy_float.test: libglitter_redistribute_energy_double.c
 libglitter_split_uint32_raster.test: libglitter_split_uint64_raster.c
 libglitter_get_colour_model_conversion_matrix_float.test: libglitter_get_colour_model_conversion_matrix_double.c
 

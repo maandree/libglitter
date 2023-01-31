@@ -4,56 +4,48 @@
 
 
 static void
-hselfconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height, size_t kernelsize, const double *hkernel)
+vconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height, size_t kernelsize, const double *kernel)
 {
-	/* TODO */
-}
-
-
-static void
-hconvolute(double *restrict output, const double *restrict input, size_t output_rowsize, size_t input_rowsize,
-           size_t width, size_t height, size_t kernelsize, const double *kernel)
-{
-	/* TODO */
-}
-
-
-static void
-vconvolute(double *restrict output, const double *restrict input, size_t output_rowsize, size_t input_rowsize,
-           size_t width, size_t height, size_t kernelsize, const double *kernel)
-{
-	/* TODO */
-}
-
-
-static void
-copyraster(double *restrict output, const double *restrict input, size_t output_rowsize,
-           size_t input_rowsize, size_t width, size_t height)
-{
-	size_t y;
+	size_t y, x, i;
 	for (y = 0; y < height; y++) {
-		memcpy(output, input, width * sizeof(double));
-		output = &output[output_rowsize];
-		input = &input[input_rowsize];
+		for (x = 0; x < width; x++)
+			raster[x] *= kernel[0];
+		for (i = 1; i < kernelsize; i++)
+			for (x = 0; x < width; x++)
+				raster[x] = fma(raster[i * rowsize + x], kernel[i], raster[x]);
+		raster = &raster[rowsize];
+	}
+}
+
+
+static void
+hconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height, size_t kernelsize, const double *kernel)
+{
+	size_t y, x, i;
+	for (y = 0; y < height; y++) {
+		for (x = 0; x < width; x++) {
+			raster[x] *= kernel[0];
+			for (i = 1; i < kernelsize; i++)
+				raster[x] = fma(raster[x + i], kernel[i], raster[x]);
+		}
+		raster = &raster[rowsize];
 	}
 }
 
 
 void
-libglitter_redistribute_energy_double(double *restrict output, const double *restrict input, /* TODO add man page */
-                                      size_t output_rowsize, size_t input_rowsize, size_t width,
-                                      size_t height, size_t hkernelsize, size_t vkernelsize,
-                                      const double *hkernel, const double *vkernel)
+libglitter_redistribute_energy_double(double *restrict raster, size_t rowsize, size_t width, size_t height, /* TODO add man page */
+                                      size_t hkernelsize, size_t vkernelsize, const double *hkernel, const double *vkernel)
 {
-	/* TODO Can we allow output==input ? */
 	if (vkernelsize > 1) {
-		vconvolute(output, input, output_rowsize, input_rowsize, width, height, vkernelsize, vkernel);
-		if (hkernelsize > 1)
-			hselfconvolute(output, output_rowsize, width, height, hkernelsize, hkernel);
-	} else if (hkernelsize > 1) {
-		vconvolute(output, input, output_rowsize, input_rowsize, width, height, hkernelsize, hkernel);
-	} else {
-		copyraster(output, input, output_rowsize, input_rowsize, width, height);
+		raster -= (hkernelsize - 1) * rowsize;
+		vconvolute(raster, rowsize, width, height, vkernelsize, vkernel);
+		height += hkernelsize - 1;
+	}
+	if (hkernelsize > 1) {
+		raster -= hkernelsize - 1;
+		hconvolute(raster, rowsize, width, height, hkernelsize, hkernel);
+		width += hkernelsize - 1;
 	}
 }
 

@@ -231,39 +231,56 @@ void libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *, size_t);
  * (both are optional) to kernel to blur the text in
  * order to reduce colour fringing
  * 
- * Each raster shall be row-major ordered an shall
- * have horizontally adjacent cells adjacent in memory:
- * the is no space between the cells' memory areas if
+ * The raster shall be row-major ordered an shall have
+ * horizontally adjacent cells adjacent in memory: the
+ * is no space between the cells' memory areas if
  * there is no horizontal space between them in the
  * raster
  * 
- * @param  output          Output subpixel raster, need not be initialised;
- *                         this raster is latter used as the input raster
- *                         for the `libglitter_compose_double` function.
- *                         This raster is assumed to have the height
- *                         `height + (vkernelsize - 1)` and the width
- *                         `width + (hkernelsize - 1)`; the text will be
- *                         offset from the top by `(vkernelsize - 1) / 2`
- *                         cells downward and and from the left by
- *                         `(hkernelsize - 1) / 2` cells rightward
- * @param  input           Input subpixel raster; this raster must have
- *                         a left padding and a right padding of
- *                         `hkernel - 1` zero-initialised cells, as well
- *                         as a top padding and a bottom padding of
- *                         `vkernel - 1` zero-initialised cells. The
- *                         the pointer itself shall point to the first
- *                         pixel, the topmost and leftmost pixel that
- *                         is not part of the padding.
- * @param  output_rowsize  The number of cells a pointer to cell in
- *                         `output` must be offset with to get to the
+ * This function will extend the image in raster by
+ * `(hkernelsize - 1) / 2` cells to the left and to
+ * the right, and `(vkernelsize - 1) / 2` cells to
+ * the up as well as down. The caller is responsible
+ * for furthering extending the image by `widthmul`
+ * - (hkernelsize - 1) / 2 % widthmul` cells both to
+ * on the left and on the right, and by `heightmul`
+ * - (vkernelsize - 1) / 2 % heightmul` cells both
+ * up and down (where `widthmul` and `heightmul` are
+ * arguments to the `libglitter_create_render_context`
+ * function); so that the raster can be input to
+ * `libglitter_compose_double`.
+ * 
+ * @param  raster          The subpixel raster. The must be padded with
+ *                         zero-initialised cells on the left side and
+ *                         on the top. This padding must `(hkernelsize - 1)`
+ *                         cells wide the left side and `(vkernelsize - 1)`
+ *                         cells tall on the top. The new image will be
+ *                         written to this raster must shiften upwards
+ *                         `(vkernelsize - 1) / 2` cells and to the left
+ *                         `(hkernelsize - 1) / 2` cells. The image will
+ *                         also be extended by `(hkernelsize - 1) / 2`
+ *                         cells on both the left side and the right size
+ *                         and by `(vkernelsize - 1) / 2` cells both above
+ *                         and below. The input pointer shall point to
+ *                         the image location in the pointer, that is
+ *                         the first cell after the padding, but once
+ *                         the function returns the pointer to first
+ *                         cell is in the padding shall be used as the
+ *                         first cell in the new image; however the image
+ *                         will be offset by `(vkernelsize - 1) / 2` cells
+ *                         vertically and `(hkernelsize - 1) / 2` cells
+ *                         horizontally.
+ * @param  rowsize         The number of cells a pointer to cell in
+ *                         `raster` must be offset with to get to the
  *                         cell on the next row but in the same column
- * @param  input_rowsize   The number of cells a pointer to cell in
- *                         `input` must be offset with to get to the
- *                         cell on the next row but in the same column
- * @param  width           The width of the input raster, excluding
- *                         padding, in cells
- * @param  height          The height of the input raster, excluding
- *                         padding, in cells
+ * @param  width           The width of the input raster (excluding
+ *                         padding), in cells. The function extends the
+ *                         image by `(hkernelsize - 1) / 2` cells
+ *                         vertically.
+ * @param  height          The height of the input raster (excluding
+ *                         padding), in cells. The function extends the
+ *                         image by `(hkernelsize - 1) / 2` cells
+ *                         horizontally.
  * @param  hkernelsize     The size (number of elements) of `hkernel`;
  *                         must be odd; if 1, `hkernel` is not applied
  * @param  vkernelsize     The size (number of elements) of `vkernel`;
@@ -287,9 +304,8 @@ void libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *, size_t);
  * `vkernel` is `{1/3., 1/3., 1/3.}`. Of course user
  * experimentation is required to find the best kernel.
  */
-LIBGLITTER_GCC_ATTRS__(nonnull(1, 2))
-void libglitter_redistribute_energy_double(double *restrict output, const double *restrict input,
-                                           size_t output_rowsize, size_t input_rowsize, size_t width,
+LIBGLITTER_GCC_ATTRS__(nonnull(1))
+void libglitter_redistribute_energy_double(double *restrict raster, size_t rowsize, size_t width,
                                            size_t height, size_t hkernelsize, size_t vkernelsize,
                                            const double *hkernel, const double *vkernel);
 
@@ -298,9 +314,8 @@ void libglitter_redistribute_energy_double(double *restrict output, const double
  * apart from it parameter types, see `libglitter_redistribute_energy_double`
  * for details about this function
  */
-LIBGLITTER_GCC_ATTRS__(nonnull(1, 2))
-void libglitter_redistribute_energy_float(float *restrict output, const float *restrict input,
-                                          size_t output_rowsize, size_t input_rowsize, size_t width,
+LIBGLITTER_GCC_ATTRS__(nonnull(1))
+void libglitter_redistribute_energy_float(float *restrict raster, size_t rowsize, size_t width,
                                           size_t height, size_t hkernelsize, size_t vkernelsize,
                                           const float *hkernel, const float *vkernel);
 
