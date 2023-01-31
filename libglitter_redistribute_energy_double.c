@@ -36,7 +36,7 @@ vconvolute(double *restrict raster, size_t rowsize, size_t width, size_t height,
 		for (y = 0; y < kernelsize - 1; y++) {
 			for (x = 0; x < width; x++)
 				raster[x] *= kernel[0];
-			for (i = 1; i < kernelsize - i - y; i++)
+			for (i = 1; i < kernelsize - 1 - y; i++)
 				for (x = 0; x < width; x++)
 					raster[x] = fma(raster[x + i * rowsize], kernel[i], raster[x]);
 			raster = &raster[rowsize];
@@ -113,8 +113,8 @@ eq(double a, double b)
 int
 main(void)
 {
-	double raster[100], hkern[15], vkern[15];
-	size_t i;
+	double raster[100], hkern[5], vkern[5];
+	size_t i, j;
 
 	for (i = 0; i < sizeof(raster) / sizeof(*raster); i++)
 		raster[i] = (double)i;
@@ -200,8 +200,108 @@ main(void)
 		if (i != 15 && i != 25 && i != 35 && i != 55 && i != 65 && i != 75)
 			ASSERT(!raster[i]);
 
-	/* TODO test edges */
-	/* TODO test hkern+vkern */
+	memset(raster, 0, sizeof(raster));
+	for (j = 20; j < 100; j += 10)
+		for (i = 2; i < 10; i += 1)
+			raster[j + i] = 1;
+	vkern[0] = 1 / 3.;
+	vkern[1] = 1 / 3.;
+	vkern[2] = 1 / 3.;
+	hkern[0] = 1 / 3.;
+	hkern[1] = 1 / 3.;
+	hkern[2] = 1 / 3.;
+	libglitter_redistribute_energy_double(&raster[22], 10, 8, 8, 3, 3, hkern, vkern);
+	for (j = 0; j < 100; j += 10)
+		for (i = 0; i < 10; i += 1)
+			ASSERT(eq(raster[j + i],
+			          ((i == 0 || i == 9) ? 1 / 3. :
+			           (i == 1 || i == 8) ? 2 / 3. : 1.) *
+			          ((j ==  0 || j == 90) ? 1 / 3. :
+			           (j == 10 || j == 80) ? 2 / 3. : 1.)));
+
+	memset(raster, 0, sizeof(raster));
+	for (j = 20; j < 100; j += 10)
+		for (i = 2; i < 10; i += 1)
+			raster[j + i] = 1;
+	vkern[0] = 1 / 3.;
+	vkern[1] = 1 / 3.;
+	vkern[2] = 1 / 3.;
+	hkern[0] = 2 / 9.;
+	hkern[1] = 5 / 9.;
+	hkern[2] = 2 / 9.;
+	libglitter_redistribute_energy_double(&raster[22], 10, 8, 8, 3, 3, hkern, vkern);
+	for (j = 0; j < 100; j += 10)
+		for (i = 0; i < 10; i += 1)
+			ASSERT(eq(raster[j + i],
+			          ((i == 0 || i == 9) ? 2 / 9. :
+			           (i == 1 || i == 8) ? 7 / 9. : 1.) *
+			          ((j ==  0 || j == 90) ? 1 / 3. :
+			           (j == 10 || j == 80) ? 2 / 3. : 1.)));
+
+	memset(raster, 0, sizeof(raster));
+	for (j = 20; j < 100; j += 10)
+		for (i = 2; i < 10; i += 1)
+			raster[j + i] = 1;
+	vkern[0] = 2 / 9.;
+	vkern[1] = 5 / 9.;
+	vkern[2] = 2 / 9.;
+	hkern[0] = 1 / 3.;
+	hkern[1] = 1 / 3.;
+	hkern[2] = 1 / 3.;
+	libglitter_redistribute_energy_double(&raster[22], 10, 8, 8, 3, 3, hkern, vkern);
+	for (j = 0; j < 100; j += 10)
+		for (i = 0; i < 10; i += 1)
+			ASSERT(eq(raster[j + i],
+			          ((i == 0 || i == 9) ? 1 / 3. :
+			           (i == 1 || i == 8) ? 2 / 3. : 1.) *
+			          ((j ==  0 || j == 90) ? 2 / 9. :
+			           (j == 10 || j == 80) ? 7 / 9. : 1.)));
+
+	memset(raster, 0, sizeof(raster));
+	for (j = 20; j < 100; j += 10)
+		for (i = 2; i < 10; i += 1)
+			raster[j + i] = 1;
+	vkern[0] = 2 / 9.;
+	vkern[1] = 5 / 9.;
+	vkern[2] = 2 / 9.;
+	hkern[0] = 2 / 9.;
+	hkern[1] = 5 / 9.;
+	hkern[2] = 2 / 9.;
+	libglitter_redistribute_energy_double(&raster[22], 10, 8, 8, 3, 3, hkern, vkern);
+	for (j = 0; j < 100; j += 10)
+		for (i = 0; i < 10; i += 1)
+			ASSERT(eq(raster[j + i],
+			          ((i == 0 || i == 9) ? 2 / 9. :
+			           (i == 1 || i == 8) ? 7 / 9. : 1.) *
+			          ((j ==  0 || j == 90) ? 2 / 9. :
+			           (j == 10 || j == 80) ? 7 / 9. : 1.)));
+
+	memset(raster, 0, sizeof(raster));
+	for (j = 40; j < 100; j += 10)
+		for (i = 4; i < 10; i += 1)
+			raster[j + i] = 1;
+	vkern[0] = 1 / 5.;
+	vkern[1] = 1 / 5.;
+	vkern[2] = 1 / 5.;
+	vkern[3] = 1 / 5.;
+	vkern[4] = 1 / 5.;
+	hkern[0] = 1 / 9.;
+	hkern[1] = 2 / 9.;
+	hkern[2] = 3 / 9.;
+	hkern[3] = 2 / 9.;
+	hkern[4] = 1 / 9.;
+	libglitter_redistribute_energy_double(&raster[44], 10, 6, 6, 5, 5, hkern, vkern);
+	for (j = 0; j < 100; j += 10)
+		for (i = 0; i < 10; i += 1)
+			ASSERT(eq(raster[j + i],
+			          ((i == 0 || i == 9) ? 1 / 9. :
+			           (i == 1 || i == 8) ? 3 / 9. :
+			           (i == 2 || i == 7) ? 6 / 9. :
+			           (i == 3 || i == 6) ? 8 / 9. : 1.) *
+			          ((j ==  0 || j == 90) ? 1 / 5. :
+			           (j == 10 || j == 80) ? 2 / 5. :
+			           (j == 20 || j == 70) ? 3 / 5. :
+			           (j == 30 || j == 60) ? 4 / 5. : 1.)));
 
 	return 0;
 }
