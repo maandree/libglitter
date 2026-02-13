@@ -8,7 +8,7 @@ greyscale-antialiased text image.
 .B libglitter
 is designed to be
 used in conjunction with other font libraries: it can neither
-rasterise glyphs nor does it know about the montor's subpixel
+rasterise glyphs nor does it know about the monitor's subpixel
 layout or rendering configurations.
 .PP
 To use
@@ -22,7 +22,7 @@ compatible and that its native resolution is used, you
 rasterise the text using greyscale-antialiasing into a raster
 sized according to the output's horizontal and vertical
 subpixel densities (rather than pixel densities as normally
-done with greyscale-antialiasing; some subpixels may have be
+done with greyscale-antialiasing; some subpixels may be
 counted multiple times depending on the subpixel arrangement).
 At this point, depending on final result, you may (will
 probably) want to use
@@ -52,7 +52,7 @@ have to first call
 .BR libglitter_reorder_rasters (3)
 to put the rasters in the expected order.
 .PP
-An optional next step is to use lessen the intensity of the
+An optional next step is to lessen the intensity of the
 subpixel-antialiasing with
 .BR libglitter_desaturate_double (3),
 .BR libglitter_desaturate_float (3),
@@ -70,18 +70,18 @@ or
 and
 .BR libglitter_colour_model_convert_rasters_float (3)
 to convert a colour model the application can output in. It is
-however out of the scope of
+however out of scope of
 .B libglitter
 to get the output's
 colour model and the conversion matrix to any other colour
 model than sRGB or CIE XYZ.
 .PP
-The finally step of the rendering process is out of scope for
+The final step of the rendering process is out of scope for
 .BR libglitter ,
 but is to ensure that all floating-point values
-(if floating-point rasters are used) are withing [0, 1] and
+(if floating-point rasters are used) are within [0, 1] and
 convert the rasters, which only contain ink-on intensities,
-into the desired colour's with the output's transfer function
+into the desired colours with the output's transfer function
 applied.
 .PP
 The application may also desire to call

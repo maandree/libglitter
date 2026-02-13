@@ -5,7 +5,7 @@ DESCRIPTION
 	libglitter is a C library for subpixel-rendered text from an
 	greyscale-antialiased text image. libglitter is designed to be
 	used in conjunction with other font libraries: it can neither
-	rasterise glyphs nor does it know about the montor's subpixel
+	rasterise glyphs nor does it know about the monitor's subpixel
 	layout or rendering configurations.
 
 	To use libglitter you first (optionally) apply hinting to the
@@ -17,7 +17,7 @@ DESCRIPTION
 	you rasterise the text using greyscale-antialiasing into a
 	raster sized according to the output's horizontal and vertical
 	subpixel densities (rather than pixel densities as normally
-	done with greyscale-antialiasing; some subpixels may have be
+	done with greyscale-antialiasing; some subpixels may be
 	counted multiple times depending on the subpixel arrangement).
 	At this point, depending on final result, you may (will
 	probably) want to use libglitter_redistribute_energy_double(3)
@@ -35,7 +35,7 @@ DESCRIPTION
 	image of the text; you may have to first call libglitter_-
 	reorder_rasters(3) to put the rasters in the expected order.
 
-	An optional next step is to use lessen the intensity of the
+	An optional next step is to lessen the intensity of the
 	subpixel-antialiasing with libglitter_desaturate_double(3),
 	libglitter_desaturate_float(3), libglitter_per_channel_-
 	desaturate_double(3), or libglitter_per_channel_desaturate_-
@@ -47,16 +47,16 @@ DESCRIPTION
 	and libglitter_colour_model_convert_rasters_double(3) or
 	libglitter_get_colour_model_conversion_matrix_float(3)
 	and libglitter_colour_model_convert_rasters_float(3) to
-	convert a colour model the application can output in. It is
-	however out of the scope of libglitter to get the output's
+	convert a colour model the application can output in. It
+	is however out of scope of libglitter to get the output's
 	colour model and the conversion matrix to any other colour
 	model than sRGB or CIE XYZ.
 
-	The finally step of the rendering process is out of scope for
+	The final step of the rendering process is out of scope for
 	libglitter, but is to ensure that all floating-point values
-	(if floating-point rasters are used) are withing [0, 1] and
+	(if floating-point rasters are used) are within [0, 1] and
 	convert the rasters, which only contain ink-on intensities,
-	into the desired colour's with the output's transfer function
+	into the desired colours with the output's transfer function
 	applied.
 
 	The application may also desire to call libglitter_enable_-
