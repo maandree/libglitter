@@ -3,7 +3,7 @@
 libglitter - Subpixel-rendering library
 .SH DESCRIPTION
 .B libglitter
-is a C library for subpixel-rendered text from an
+is a C library for subpixel-rendered text from a
 greyscale-antialiased text image.
 .B libglitter
 is designed to be
@@ -14,7 +14,7 @@ layout or rendering configurations.
 To use
 .B libglitter
 you first (optionally) apply hinting to the text so that
-the glyph outlines aligns with the output's pixel-grid as
+the glyph outlines align with the output's pixel-grid as
 closely as possible. The next step is to get the output's
 subpixel arrangement and scaling factor, then assuming that
 the output's subpixel arrangement is subpixel-rendering
@@ -94,7 +94,7 @@ desirable for all applications.
 Some users are more sensitive to colour while other users
 are more sensitive to shape. Subpixel-antialiasing, if done
 well, is a good option for users that are more sensitive
-to shape. However, for users that are more sensative to
+to shape. However, for users that are more sensitive to
 colour, subpixel-antialiasing renders glittering, and reading
 subpixel-antialiased text can be headache inducing, especially
 if implemented poorly or if the monitor doesn't have high
@@ -102,7 +102,7 @@ enough pixel density (for some users just above normal laptop
 pixel density can be fine, but for others, not even 4K on a
 laptop is good enough). For these users, greyscale-antialiasing
 is a much better option. For this reason, applications must
-not for subpixel-antialiasing, and should even only used it
+not default to subpixel-antialiasing, and should only use it
 if the user explicitly requests it.
 .PP
 Hinting is another important issue. For aliased text, hinting
@@ -121,10 +121,10 @@ hinting removes fringing (colours along the edge of a stroke)
 and miscoloured strokes, strokes can even disappear: for
 example, if the stroke only hits blue subpixels, but should be
 rendered as pure red (the primary colour) on black, there will
-only be black, as that is what primary red muliplied by primary
-blue results in. Applications are discourage for using
-subpixel-rendering on non-hinted text unless that user
-explicitly says it he wants subpixel-rendered text even it will
+only be black, as that is what primary red multiplied by primary
+blue results in. Applications are discouraged from using
+subpixel-rendering on non-hinted text unless the user explicitly
+says that he want subpixel-rendered text even if it will
 look bad (presumably to see how it looks). Subpixel-rendering
 may also be a bad idea on coloured text.
 .PP

@@ -2,14 +2,14 @@ NAME
 	libglitter - Subpixel-rendering library
 
 DESCRIPTION
-	libglitter is a C library for subpixel-rendered text from an
+	libglitter is a C library for subpixel-rendered text from a
 	greyscale-antialiased text image. libglitter is designed to be
 	used in conjunction with other font libraries: it can neither
 	rasterise glyphs nor does it know about the monitor's subpixel
 	layout or rendering configurations.
 
 	To use libglitter you first (optionally) apply hinting to the
-	text so that the glyph outlines aligns with the output's
+	text so that the glyph outlines align with the output's
 	pixel-grid as closely as possible. The next step is to get
 	the output's subpixel arrangement and scaling factor, then
 	assuming that the output's subpixel arrangement is subpixel-

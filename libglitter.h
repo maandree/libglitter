@@ -148,7 +148,7 @@ enum libglitter_colour {
  *                    - LIBGLITTER_FEATURE_UINT32_TYPE,
  *                    - LIBGLITTER_FEATURE_UINT16_TYPE,
  *                    - LIBGLITTER_FEATURE_UINT8_TYPE,
- '                    - LIBGLITTER_FEATURE_REDISTRIBUTE,
+ *                    - LIBGLITTER_FEATURE_REDISTRIBUTE,
  *                    - LIBGLITTER_FEATURE_COMPOSE,
  *                    - LIBGLITTER_FEATURE_CU_DESATURATION,
  *                    - LIBGLITTER_FEATURE_PC_DESATURATION, and
@@ -200,10 +200,10 @@ void libglitter_free_render_context(LIBGLITTER_RENDER_CONTEXT *);
  *                      `libglitter_free_render_context` or updated with
  *                      `libglitter_update_render_context`; `NULL` on failure
  *
- * @throws  ENOMEM  Couldn't not allocate enough memory
+ * @throws  ENOMEM  Could not allocate enough memory
  * 
  * If `noutputs` is 3 and either `widthmul` or `heightmul` is 3 and
- * the other one is 1, `ncellvalues` will not be used as it is preknown
+ * the other one is 1, `ncellvalues` will not be used as it is known
  * that all its values are 1; in the future this could also happen for
  * other situations where `noutputs == widthmul * heightmul`
  * 
@@ -250,12 +250,12 @@ void libglitter_update_render_context(LIBGLITTER_RENDER_CONTEXT *, size_t);
  * `libglitter_create_render_context` function); so that
  * the raster can be input to `libglitter_compose_double`.
  * 
- * @param  raster          The subpixel raster. The must be padded with
+ * @param  raster          The subpixel raster. It must be padded with
  *                         zero-initialised cells on the left side and
  *                         on the top. This padding must `(hkernelsize - 1)`
  *                         cells wide the left side and `(vkernelsize - 1)`
  *                         cells tall on the top. The new image will be
- *                         written to this raster must shiften upwards
+ *                         written to this raster must be shifted upwards
  *                         `(vkernelsize - 1) / 2` cells and to the left
  *                         `(hkernelsize - 1) / 2` cells. The image will
  *                         also be extended by `(hkernelsize - 1) / 2`
